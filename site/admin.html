@@ -423,6 +423,55 @@
   </main>
 </div>
 
+<nav class="app-tabbar" id="appTabbar">
+  <button data-panel="visao" class="active">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+    Início
+  </button>
+  <button data-panel="cursos">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5 12 3l9 3.5-9 3.5-9-3.5Z"/><path d="M7 9.5V16c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V9.5"/></svg>
+    Cursos
+  </button>
+  <button data-panel="eventos">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+    Eventos
+  </button>
+  <button data-panel="membros">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M14.5 14.5c2.4.3 4 2.1 4 4.5"/></svg>
+    Membros
+  </button>
+  <button type="button" id="moreTabBtn">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+    Mais
+  </button>
+</nav>
+
+<div class="app-more-backdrop" id="moreBackdrop"></div>
+<div class="app-more-sheet" id="moreSheet">
+  <div class="sheet-handle"></div>
+  <button data-panel="materiais">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4.5h11l3 3V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
+    Biblioteca de materiais
+  </button>
+  <button data-panel="comunicados">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v11H8l-4 3.5v-3.5H4Z"/></svg>
+    Comunicados
+  </button>
+  <button data-panel="configuracoes">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.5-2.4.7a7.6 7.6 0 0 0-2.6-1.5L14 2h-4l-.4 2.2a7.6 7.6 0 0 0-2.6 1.5l-2.4-.7-2 3.5 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.5 2.4-.7a7.6 7.6 0 0 0 2.6 1.5L10 22h4l.4-2.2a7.6 7.6 0 0 0 2.6-1.5l2.4.7 2-3.5-2-1.5Z"/></svg>
+    Configurações do site
+  </button>
+  <div class="sheet-divider"></div>
+  <button type="button" id="mobileBackToSite">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 18l-6-6 6-6"/></svg>
+    Ver site publicado
+  </button>
+  <button type="button" id="mobileLogout" class="sheet-logout">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+    Sair da conta
+  </button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <div class="modal-overlay" id="passwordModal">
@@ -439,15 +488,36 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="accessModal">
+  <div class="modal-box" style="max-width:460px;">
+    <h3 id="accessModalTitle">Cursos liberados</h3>
+    <p>Cursos gratuitos ficam sempre visíveis para qualquer aluno cadastrado. Marque aqui só os <strong>cursos pagos</strong> que esta pessoa pode acessar.</p>
+    <div id="accessModalList" style="display:grid;gap:2px;max-height:44vh;overflow-y:auto;margin:14px 0;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-block" id="accessModalClose" type="button">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
+<script src="js/courses-api.js"></script>
 <script>
 var sb = window.getSupabaseClient();
 
-function initApp() {
+async function initApp() {
   var data = CIStore.load();
-  var activeCourseId = data.courses[0] ? data.courses[0].id : null;
+  var courses = [];
+  var activeCourseId = null;
+  var myId = (await sb.auth.getSession()).data.session.user.id;
+
+  async function loadCourses() {
+    courses = await CoursesAPI.loadAllCourses();
+    if (!activeCourseId || !courses.find(function (c) { return c.id === activeCourseId; })) {
+      activeCourseId = courses[0] ? courses[0].id : null;
+    }
+  }
 
   function toast(msg) {
     var el = document.getElementById('toast');
@@ -464,10 +534,10 @@ function initApp() {
   }
 
   function renderStats() {
-    var totalLessons = data.courses.reduce(function (sum, c) { return sum + c.lessons.length; }, 0);
+    var totalLessons = courses.reduce(function (sum, c) { return sum + (c.lessons || []).length; }, 0);
     var stats = [
       { label: 'Próximos eventos', value: data.events.length },
-      { label: 'Cursos ativos', value: data.courses.length },
+      { label: 'Cursos ativos', value: courses.length },
       { label: 'Aulas cadastradas', value: totalLessons },
       { label: 'Materiais na biblioteca', value: data.materials.length }
     ];
@@ -487,15 +557,15 @@ function initApp() {
   }
 
   function renderCourseChips() {
-    document.getElementById('adminCourseChips').innerHTML = data.courses.map(function (c) {
-      return '<button data-course="' + c.id + '" class="' + (c.id === activeCourseId ? 'active' : '') + '">' + c.title + (c.externalLink ? ' · link externo' : '') + '</button>';
+    document.getElementById('adminCourseChips').innerHTML = courses.map(function (c) {
+      return '<button data-course="' + c.id + '" class="' + (c.id === activeCourseId ? 'active' : '') + '">' + c.title + (c.external_link ? ' · link externo' : '') + '</button>';
     }).join('') || '<div class="empty-state">Nenhum curso cadastrado ainda.</div>';
-    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    var course = courses.find(function (c) { return c.id === activeCourseId; });
     document.getElementById('adminSelectedCourseLabel').textContent = course ? 'Adicionando aula em: ' + course.title : 'Crie ou selecione um curso acima';
   }
 
   function renderLessons() {
-    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    var course = courses.find(function (c) { return c.id === activeCourseId; });
     var body = document.getElementById('lessonsBody');
     if (!course || !course.lessons.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">Nenhuma aula cadastrada para este curso ainda.</div></td></tr>'; return; }
     body.innerHTML = course.lessons.map(function (l) {
@@ -523,14 +593,15 @@ function initApp() {
     }).join('');
   }
 
-  function renderMembers() {
-    var my = CIStore.computeMyStats(data);
+  async function renderMembers() {
+    var myProgress = await CoursesAPI.loadProgress(myId);
+    var my = CIStore.computeMyStats(courses, myProgress);
     var myLevel = CIStore.levelForXp(my.xp);
     var rows = data.members.map(function (m) {
       var level = CIStore.levelForXp(m.xp);
       return { name: m.name, profession: m.profession, courses: m.courses, xp: m.xp, title: level.title, isMe: false };
     });
-    rows.push({ name: 'Você', profession: 'Sua conta neste navegador', courses: data.courses.length, xp: my.xp, title: myLevel.title, isMe: true });
+    rows.push({ name: 'Você', profession: 'Sua conta neste navegador', courses: courses.length, xp: my.xp, title: myLevel.title, isMe: true });
     rows.sort(function (a, b) { return b.xp - a.xp; });
 
     document.getElementById('membersBody').innerHTML = rows.map(function (r, i) {
@@ -570,6 +641,7 @@ function initApp() {
         '<td><span class="table-tag">' + (p.role === 'admin' ? 'Administrador' : 'Aluno') + '</span></td>' +
         '<td>' + joined + '</td>' +
         '<td style="text-align:right;white-space:nowrap;">' +
+          '<button class="btn btn-outline btn-sm" data-manage-access="' + p.id + '" data-email="' + (p.email || '') + '" data-name="' + (p.full_name || p.email || '') + '" style="margin-right:6px;">Cursos liberados</button>' +
           (isMe ? '' :
             '<button class="btn btn-outline btn-sm" data-reset-pw="' + p.id + '" style="margin-right:6px;">Redefinir senha</button>' +
             '<button class="btn btn-outline btn-sm" data-toggle-role="' + p.id + '" data-current-role="' + p.role + '" style="margin-right:6px;">' + toggleLabel + '</button>' +
@@ -597,6 +669,51 @@ function initApp() {
       btn.textContent = 'Copiada!';
       setTimeout(function () { btn.textContent = original; }, 1400);
     });
+  });
+
+  async function openAccessModal(userId, email, name) {
+    document.getElementById('accessModalTitle').textContent = 'Cursos liberados — ' + name;
+    var listEl = document.getElementById('accessModalList');
+    var paidCourses = courses.filter(function (c) { return c.external_link; });
+    if (!paidCourses.length) {
+      listEl.innerHTML = '<div class="empty-state">Nenhum curso pago cadastrado ainda — todos os cursos atuais são gratuitos e já ficam visíveis para qualquer aluno.</div>';
+      document.getElementById('accessModal').classList.add('show');
+      return;
+    }
+    var enrollments = await CoursesAPI.loadEnrollmentsForUser(userId);
+    var activeIds = {};
+    enrollments.forEach(function (e) { if (e.status === 'active') activeIds[e.course_id] = true; });
+
+    listEl.innerHTML = paidCourses.map(function (c) {
+      return '<label class="lesson-row" style="cursor:pointer;">' +
+        '<input type="checkbox" class="lesson-check" data-access-course="' + c.id + '" ' + (activeIds[c.id] ? 'checked' : '') + '>' +
+        '<div class="lesson-title">' + c.title + '<small>' + (c.external_price || 'Curso pago') + '</small></div>' +
+      '</label>';
+    }).join('');
+
+    listEl.querySelectorAll('[data-access-course]').forEach(function (box) {
+      box.addEventListener('change', async function () {
+        box.disabled = true;
+        try {
+          await CoursesAPI.setEnrollment(email, userId, box.getAttribute('data-access-course'), box.checked);
+          toast(box.checked ? 'Acesso liberado' : 'Acesso removido');
+        } catch (err) {
+          toast('Erro: ' + err.message);
+          box.checked = !box.checked;
+        }
+        box.disabled = false;
+      });
+    });
+
+    document.getElementById('accessModal').classList.add('show');
+  }
+  document.getElementById('accessModalClose').addEventListener('click', function () {
+    document.getElementById('accessModal').classList.remove('show');
+  });
+  document.getElementById('realMembersBody').addEventListener('click', function (e) {
+    var accessBtn = e.target.closest('[data-manage-access]');
+    if (!accessBtn) return;
+    openAccessModal(accessBtn.getAttribute('data-manage-access'), accessBtn.getAttribute('data-email'), accessBtn.getAttribute('data-name'));
   });
 
   document.getElementById('inviteForm').addEventListener('submit', async function (e) {
@@ -661,7 +778,8 @@ function initApp() {
     document.getElementById('setEmail').value = data.settings.email;
   }
 
-  function renderAll() {
+  async function renderAll() {
+    await loadCourses();
     renderStats();
     renderEvents();
     renderCourseChips();
@@ -673,16 +791,42 @@ function initApp() {
   }
 
   // Nav
-  document.getElementById('adminNav').addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-panel]');
-    if (!btn) return;
-    document.querySelectorAll('#adminNav button').forEach(function (b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    var panel = btn.getAttribute('data-panel');
+  var PANEL_TITLES = {
+    visao: 'Visão geral', eventos: 'Eventos e agenda', cursos: 'Cursos e aulas',
+    materiais: 'Biblioteca de materiais', comunicados: 'Comunicados', membros: 'Membros',
+    configuracoes: 'Configurações do site'
+  };
+
+  function activatePanel(panel) {
+    document.querySelectorAll('[data-panel]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-panel') === panel); });
     document.querySelectorAll('.app-panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === panel); });
-    document.getElementById('adminTitle').textContent = btn.textContent.trim();
-    if (panel === 'membros') renderMembers();
+    document.getElementById('adminTitle').textContent = PANEL_TITLES[panel] || '';
+    if (panel === 'membros') { renderMembers(); renderRealMembers(); }
+    closeMoreSheet();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function openMoreSheet() {
+    document.getElementById('moreSheet').classList.add('show');
+    document.getElementById('moreBackdrop').classList.add('show');
+  }
+  function closeMoreSheet() {
+    document.getElementById('moreSheet').classList.remove('show');
+    document.getElementById('moreBackdrop').classList.remove('show');
+  }
+
+  document.querySelectorAll('#adminNav, #appTabbar, #moreSheet').forEach(function (nav) {
+    nav.addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-panel]');
+      if (!btn) return;
+      activatePanel(btn.getAttribute('data-panel'));
+    });
   });
+
+  document.getElementById('moreTabBtn').addEventListener('click', openMoreSheet);
+  document.getElementById('moreBackdrop').addEventListener('click', closeMoreSheet);
+  document.getElementById('mobileBackToSite').addEventListener('click', function () { window.location.href = 'index.html'; });
+  document.getElementById('mobileLogout').addEventListener('click', function () { document.getElementById('logoutLink').click(); });
 
   // Course chips
   document.getElementById('adminCourseChips').addEventListener('click', function (e) {
@@ -727,32 +871,40 @@ function initApp() {
       return;
     }
 
-    var course = {
-      id: CIStore.uid('course'), title: title, modality: modality, workload: workload, description: description,
-      externalPrice: externalPrice, externalLink: externalLink, hotmartWatchUrl: watchLink, imageUrl: imageUrl, lessons: []
-    };
-    data.courses.push(course);
-    activeCourseId = course.id;
-    persist();
-    renderCourseChips();
-    renderLessons();
-    renderStats();
-    e.target.reset();
+    try {
+      var course = await CoursesAPI.createCourse({
+        title: title, modality: modality, workload: workload, description: description,
+        external_price: externalPrice, external_link: externalLink, hotmart_watch_url: watchLink, image_url: imageUrl
+      });
+      course.lessons = [];
+      courses.push(course);
+      activeCourseId = course.id;
+      renderCourseChips();
+      renderLessons();
+      renderStats();
+      e.target.reset();
+      toast('Curso criado — já disponível na página pública de Cursos');
+    } catch (err) {
+      toast('Erro ao criar curso: ' + err.message);
+    }
     btn.disabled = false; btn.textContent = 'Criar curso';
-    toast('Curso criado — já disponível na página pública de Cursos');
   });
 
-  document.getElementById('deleteCourseBtn').addEventListener('click', function () {
-    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+  document.getElementById('deleteCourseBtn').addEventListener('click', async function () {
+    var course = courses.find(function (c) { return c.id === activeCourseId; });
     if (!course) return;
     if (!confirm('Remover o curso "' + course.title + '" e todas as suas aulas?')) return;
-    data.courses = data.courses.filter(function (c) { return c.id !== activeCourseId; });
-    activeCourseId = data.courses[0] ? data.courses[0].id : null;
-    persist();
-    renderCourseChips();
-    renderLessons();
-    renderStats();
-    toast('Curso removido');
+    try {
+      await CoursesAPI.deleteCourse(activeCourseId);
+      courses = courses.filter(function (c) { return c.id !== activeCourseId; });
+      activeCourseId = courses[0] ? courses[0].id : null;
+      renderCourseChips();
+      renderLessons();
+      renderStats();
+      toast('Curso removido');
+    } catch (err) {
+      toast('Erro ao remover curso: ' + err.message);
+    }
   });
 
   // Event form
@@ -796,29 +948,38 @@ function initApp() {
   });
 
   // Lesson form
-  document.getElementById('lessonForm').addEventListener('submit', function (e) {
+  document.getElementById('lessonForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    var course = courses.find(function (c) { return c.id === activeCourseId; });
     if (!course) return;
     var title = document.getElementById('lessonTitle').value.trim();
     var duration = document.getElementById('lessonDuration').value.trim();
     if (!title || !duration) return;
-    course.lessons.push({ id: CIStore.uid('l'), title: title, duration: duration });
-    persist();
-    renderLessons();
-    renderStats();
-    e.target.reset();
-    toast('Aula adicionada ao curso');
+    try {
+      var lesson = await CoursesAPI.addLesson(course.id, { title: title, duration: duration, position: course.lessons.length });
+      course.lessons.push(lesson);
+      renderLessons();
+      renderStats();
+      e.target.reset();
+      toast('Aula adicionada ao curso');
+    } catch (err) {
+      toast('Erro ao adicionar aula: ' + err.message);
+    }
   });
 
-  document.getElementById('lessonsBody').addEventListener('click', function (e) {
+  document.getElementById('lessonsBody').addEventListener('click', async function (e) {
     var btn = e.target.closest('button[data-del-lesson]');
     if (!btn) return;
-    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    var course = courses.find(function (c) { return c.id === activeCourseId; });
     if (!course) return;
     var id = btn.getAttribute('data-del-lesson');
+    try {
+      await CoursesAPI.deleteLesson(id);
+    } catch (err) {
+      toast('Erro ao remover aula: ' + err.message);
+      return;
+    }
     course.lessons = course.lessons.filter(function (l) { return l.id !== id; });
-    persist();
     renderLessons();
     renderStats();
     toast('Aula removida');
@@ -885,9 +1046,8 @@ function initApp() {
   });
 
   document.getElementById('resetDataBtn').addEventListener('click', function () {
-    if (!confirm('Restaurar todos os dados de exemplo? Isso apaga eventos, cursos, aulas, materiais e comunicados adicionados neste navegador.')) return;
+    if (!confirm('Restaurar eventos, materiais e comunicados de exemplo? (Cursos e matrículas ficam salvos no banco de dados e não são afetados por isso.)')) return;
     data = CIStore.reset();
-    activeCourseId = data.courses[0] ? data.courses[0].id : null;
     fillSettingsForm();
     renderAll();
     toast('Dados restaurados');

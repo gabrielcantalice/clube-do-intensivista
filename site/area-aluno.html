@@ -211,17 +211,65 @@
   </main>
 </div>
 
+<nav class="app-tabbar" id="appTabbar">
+  <button data-panel="visao" class="active">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+    Início
+  </button>
+  <button data-panel="cursos">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6.5 12 3l9 3.5-9 3.5-9-3.5Z"/><path d="M7 9.5V16c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V9.5"/></svg>
+    Cursos
+  </button>
+  <button data-panel="duvidas">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20l1.2-3.6A8 8 0 1 1 8.6 19L4 20Z"/><path d="M9 10.2h.01M12 10.2h.01M15 10.2h.01"/></svg>
+    Dúvidas
+  </button>
+  <button data-panel="materiais">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4.5h11l3 3V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
+    Materiais
+  </button>
+  <button type="button" id="moreTabBtn">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+    Mais
+  </button>
+</nav>
+
+<div class="app-more-backdrop" id="moreBackdrop"></div>
+<div class="app-more-sheet" id="moreSheet">
+  <div class="sheet-handle"></div>
+  <button data-panel="certificados">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5 5 2.5-1.5-7.5"/></svg>
+    Certificados
+  </button>
+  <button data-panel="comunicados">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v11H8l-4 3.5v-3.5H4Z"/></svg>
+    Comunicados
+  </button>
+  <div class="sheet-divider"></div>
+  <button type="button" id="mobileBackToSite">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 18l-6-6 6-6"/></svg>
+    Voltar ao site
+  </button>
+  <button type="button" id="mobileLogout" class="sheet-logout">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+    Sair da conta
+  </button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
+<script src="js/courses-api.js"></script>
 <script>
-function initApp() {
+async function initApp(myId) {
   var data = CIStore.load();
-  var progress = CIStore.loadProgress();
-  var enrolledIds = data.courses.map(function (c) { return c.id; });
-  var activeCourseId = enrolledIds[0];
+  var allCourses = await CoursesAPI.loadAllCourses();
+  var myEnrollments = await CoursesAPI.loadEnrollmentsForUser(myId);
+  data.courses = CoursesAPI.coursesVisibleTo(allCourses, myEnrollments);
+  var progress = await CoursesAPI.loadProgress(myId);
+  var activeCourseId = data.courses[0] ? data.courses[0].id : null;
 
   var FORUM_KEY = 'ci_forum_v1';
   var NAME_KEY = 'ci_display_name_v1';
@@ -419,13 +467,16 @@ function initApp() {
     document.getElementById('alunoCourseChips').innerHTML = data.courses.map(function (c) {
       return '<button data-course="' + c.id + '" class="' + (c.id === activeCourseId ? 'active' : '') + '">' + c.title + '</button>';
     }).join('');
+    if (!data.courses.length) {
+      document.getElementById('alunoLessonsList').innerHTML = '<div class="empty-state">Você ainda não tem cursos liberados. Fale com o Clube para começar.</div>';
+    }
   }
 
   function renderLessons() {
     var course = data.courses.find(function (c) { return c.id === activeCourseId; });
     if (!course) return;
 
-    if (course.hotmartWatchUrl) {
+    if (course.hotmart_watch_url) {
       document.getElementById('alunoCourseProgressBar').style.width = '0%';
       var syllabus = course.lessons.length
         ? '<h4 style="margin:18px 0 10px;font-size:.88rem;color:var(--ink-soft);">Conteúdo programático</h4>' +
@@ -436,7 +487,7 @@ function initApp() {
       document.getElementById('alunoLessonsList').innerHTML =
         '<div class="cert-card" style="margin-bottom:4px;">' +
           '<div><h4>Este curso é assistido na Hotmart</h4><p>Use o mesmo e-mail da compra para acessar as aulas.</p></div>' +
-          '<a href="' + course.hotmartWatchUrl + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Assistir agora</a>' +
+          '<a href="' + course.hotmart_watch_url + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Assistir agora</a>' +
         '</div>' + syllabus;
       return;
     }
@@ -524,13 +575,34 @@ function initApp() {
   }
 
   /* ---------- Events ---------- */
-  document.getElementById('alunoNav').addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-panel]');
-    if (!btn) return;
-    document.querySelectorAll('#alunoNav button').forEach(function (b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    document.querySelectorAll('.app-panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === btn.getAttribute('data-panel')); });
+  function activatePanel(panel) {
+    document.querySelectorAll('[data-panel]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-panel') === panel); });
+    document.querySelectorAll('.app-panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === panel); });
+    closeMoreSheet();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function openMoreSheet() {
+    document.getElementById('moreSheet').classList.add('show');
+    document.getElementById('moreBackdrop').classList.add('show');
+  }
+  function closeMoreSheet() {
+    document.getElementById('moreSheet').classList.remove('show');
+    document.getElementById('moreBackdrop').classList.remove('show');
+  }
+
+  document.querySelectorAll('#alunoNav, #appTabbar, #moreSheet').forEach(function (nav) {
+    nav.addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-panel]');
+      if (!btn) return;
+      activatePanel(btn.getAttribute('data-panel'));
+    });
   });
+
+  document.getElementById('moreTabBtn').addEventListener('click', openMoreSheet);
+  document.getElementById('moreBackdrop').addEventListener('click', closeMoreSheet);
+  document.getElementById('mobileBackToSite').addEventListener('click', function () { window.location.href = 'index.html'; });
+  document.getElementById('mobileLogout').addEventListener('click', function () { document.getElementById('logoutLink').click(); });
 
   document.getElementById('alunoCourseChips').addEventListener('click', function (e) {
     var btn = e.target.closest('button[data-course]');
@@ -540,12 +612,21 @@ function initApp() {
     renderLessons();
   });
 
-  document.getElementById('alunoLessonsList').addEventListener('change', function (e) {
+  document.getElementById('alunoLessonsList').addEventListener('change', async function (e) {
     var box = e.target.closest('.lesson-check');
     if (!box) return;
     var id = box.getAttribute('data-lesson');
     progress[id] = box.checked;
-    CIStore.saveProgress(progress);
+    box.disabled = true;
+    try {
+      await CoursesAPI.setLessonDone(myId, id, box.checked);
+    } catch (err) {
+      progress[id] = !box.checked;
+      toast('Erro ao salvar: ' + err.message);
+      box.disabled = false;
+      return;
+    }
+    box.disabled = false;
     renderLessons();
     renderStats();
     renderProgressList();
@@ -629,7 +710,7 @@ function initApp() {
     document.getElementById('userEmailLabel').textContent = session.user.email;
     document.getElementById('authGate').style.display = 'none';
     document.getElementById('appShell').style.visibility = 'visible';
-    initApp();
+    initApp(session.user.id);
   });
 })();
 </script>

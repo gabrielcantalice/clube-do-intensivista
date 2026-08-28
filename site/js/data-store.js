@@ -92,17 +92,20 @@
     return { index: index, title: LEVELS[index].title, xp: xp };
   }
 
-  // Computes the current browser's own XP from course progress + forum activity,
-  // using the same rules as the Área do Aluno gamification panel.
-  function computeMyStats(data) {
-    var progress = loadProgress();
+  // Computes XP from course progress (courses/lessons + a lessonId->done map,
+  // both now sourced from Supabase) plus forum activity (still local).
+  // Passing courses/progress explicitly keeps this usable from any page
+  // regardless of where that data came from.
+  function computeMyStats(courses, progressMap) {
+    progressMap = progressMap || loadProgress();
     var forum = [];
     try { forum = JSON.parse(localStorage.getItem('ci_forum_v1')) || []; } catch (e) { forum = []; }
 
     var watched = 0, completedCourses = 0;
-    data.courses.forEach(function (c) {
-      var total = c.lessons.length;
-      var done = c.lessons.filter(function (l) { return progress[l.id]; }).length;
+    (courses || []).forEach(function (c) {
+      var lessons = c.lessons || [];
+      var total = lessons.length;
+      var done = lessons.filter(function (l) { return progressMap[l.id]; }).length;
       watched += done;
       if (total > 0 && done === total) completedCourses++;
     });

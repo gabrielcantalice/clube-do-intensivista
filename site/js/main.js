@@ -5,6 +5,20 @@ document.addEventListener('DOMContentLoaded', function () {
     toggle.addEventListener('click', function () {
       nav.classList.toggle('open');
     });
+
+    // On narrow screens the header can't fit logo + CTA + hamburger side by
+    // side without overflowing horizontally, so the CTA buttons move inside
+    // the nav drawer instead of sitting in the header on those widths.
+    var actions = document.querySelector('.site-header-actions');
+    if (actions) {
+      var ctaLinks = actions.querySelectorAll('a.btn, a.link-quiet');
+      if (ctaLinks.length) {
+        var ctaWrap = document.createElement('div');
+        ctaWrap.className = 'site-nav-cta';
+        ctaLinks.forEach(function (link) { ctaWrap.appendChild(link.cloneNode(true)); });
+        nav.appendChild(ctaWrap);
+      }
+    }
   }
 
   document.querySelectorAll('.filter-bar').forEach(function (bar) {
