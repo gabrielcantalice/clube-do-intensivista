@@ -44,6 +44,10 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v11H8l-4 3.5v-3.5H4Z"/></svg>
         Comunicados
       </button>
+      <button data-panel="ranking">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 20V10M14 20V4M20 20v-7M4 20h18"/></svg>
+        Ranking
+      </button>
     </nav>
 
     <div class="app-sidebar-foot" style="display:flex;flex-direction:column;gap:8px;">
@@ -131,10 +135,6 @@
         </div>
         <form class="app-form" id="questionForm">
           <div class="full">
-            <label>Seu nome de exibição</label>
-            <input type="text" id="questionAuthor" placeholder="Como quer aparecer para os colegas">
-          </div>
-          <div>
             <label>Área clínica</label>
             <select id="questionTag">
               <option>Ventilação Mecânica</option>
@@ -145,7 +145,6 @@
               <option>Outro</option>
             </select>
           </div>
-          <div></div>
           <div class="full">
             <label>O que está acontecendo</label>
             <textarea id="questionBody" rows="3" placeholder="Ex: paciente em VM com PEEP 12, dessaturando após aspiração. Como conduzir?" required></textarea>
@@ -160,9 +159,9 @@
         <div class="forum-toolbar">
           <div>
             <h3 style="margin:0 0 2px;">Dúvidas da comunidade</h3>
-            <p style="margin:0;font-size:.82rem;">Respostas valem XP e ajudam colegas em tempo real.</p>
+            <p style="margin:0;font-size:.82rem;">Responder vale mais pontos no ranking — e ajuda de verdade quem perguntou.</p>
           </div>
-          <div class="sync-note"><span class="sync-dot"></span> Sincronizado entre abas abertas neste navegador</div>
+          <div class="sync-note"><span class="sync-dot"></span> Visível para todos os membros do Clube</div>
         </div>
         <div id="forumList"></div>
       </div>
@@ -208,6 +207,34 @@
         <div id="alunoAnnouncementsFull"></div>
       </div>
     </section>
+
+    <!-- RANKING -->
+    <section class="app-panel" data-panel="ranking">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Mais engajados</h3>
+            <p>Publicar dúvida vale 5 pts, responder a de um colega vale 15 pts, acertar um caso em "Na Prática" vale 5 pts.</p>
+          </div>
+        </div>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th>#</th><th>Membro</th><th>Perfil</th><th>Pontos</th></tr></thead>
+          <tbody id="rankingEngagementBody"></tbody>
+        </table></div>
+      </div>
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Sequência de acertos</h3>
+            <p>Maior sequência de respostas certas seguidas nos casos clínicos de "Na Prática".</p>
+          </div>
+        </div>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th>#</th><th>Membro</th><th>Perfil</th><th>Sequência</th></tr></thead>
+          <tbody id="rankingStreakBody"></tbody>
+        </table></div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -245,6 +272,10 @@
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v11H8l-4 3.5v-3.5H4Z"/></svg>
     Comunicados
   </button>
+  <button data-panel="ranking">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 20V10M14 20V4M20 20v-7M4 20h18"/></svg>
+    Ranking
+  </button>
   <div class="sheet-divider"></div>
   <button type="button" id="mobileBackToSite">
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M15 18l-6-6 6-6"/></svg>
@@ -262,6 +293,7 @@
 <script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
 <script src="js/courses-api.js"></script>
+<script src="js/forum-api.js"></script>
 <script>
 async function initApp(myId) {
   var data = CIStore.load();
@@ -271,8 +303,6 @@ async function initApp(myId) {
   var progress = await CoursesAPI.loadProgress(myId);
   var activeCourseId = data.courses[0] ? data.courses[0].id : null;
 
-  var FORUM_KEY = 'ci_forum_v1';
-  var NAME_KEY = 'ci_display_name_v1';
   var expandedThreads = {};
 
   var LEVELS = [
@@ -316,62 +346,31 @@ async function initApp(myId) {
     return Math.round((done / total) * 100);
   }
 
-  /* ---------- Forum store ---------- */
-  function seedForum() {
-    var now = Date.now();
-    return [
-      {
-        id: 'th-1', authorIsMe: false, author: 'Rodrigo S.', tag: 'Ventilação Mecânica',
-        body: 'Paciente em VM, PEEP 12, dessaturando bruscamente após aspiração. Já reconectei e aumentei FiO2 a 100%. Alguma sugestão de próximo passo antes de acionar a equipe médica?',
-        createdAt: now - 6 * 60 * 1000,
-        answers: [
-          { id: 'a-1', authorIsMe: false, author: 'Camila M.', body: 'Verifica se não é desrecrutamento — considera manobra de recrutamento rápida e checa se o circuito está bem vedado antes de mais nada.', createdAt: now - 3 * 60 * 1000 }
-        ]
-      },
-      {
-        id: 'th-2', authorIsMe: false, author: 'Juliana T.', tag: 'Hemodinâmica',
-        body: 'Paciente séptico, PAM 58 mesmo após 30ml/kg de cristaloide. Já é hora de iniciar noradrenalina ou vale mais uma prova de fluido?',
-        createdAt: now - 40 * 60 * 1000,
-        answers: []
-      },
-      {
-        id: 'th-3', authorIsMe: false, author: 'Rodrigo S.', tag: 'Fisioterapia Motora',
-        body: 'Alguém tem um protocolo de mobilização precoce validado para paciente em VM há 3 dias, hemodinamicamente estável?',
-        createdAt: now - 3 * 60 * 60 * 1000,
-        answers: [
-          { id: 'a-2', authorIsMe: false, author: 'Camila M.', body: 'A gente usa a escala de Perme como critério de elegibilidade antes de progredir a mobilização — funciona bem.', createdAt: now - 2 * 60 * 60 * 1000 },
-          { id: 'a-3', authorIsMe: false, author: 'Juliana T.', body: 'Também vale checar estabilidade de PAM e FiO2 <= 60% antes de sair da cama.', createdAt: now - 90 * 60 * 1000 }
-        ]
-      }
-    ];
+  /* ---------- Forum store (Supabase) ---------- */
+  var forum = [];
+
+  async function loadForum() {
+    try { forum = await ForumAPI.loadThreads(); } catch (e) { forum = []; }
   }
 
-  function loadForum() {
-    try {
-      var raw = localStorage.getItem(FORUM_KEY);
-      if (!raw) { var seeded = seedForum(); localStorage.setItem(FORUM_KEY, JSON.stringify(seeded)); return seeded; }
-      return JSON.parse(raw);
-    } catch (e) { return seedForum(); }
+  function threadAuthorName(t) {
+    return (t.profiles && t.profiles.full_name) || 'Aluno(a) do Clube';
   }
 
-  function saveForum(threads) {
-    localStorage.setItem(FORUM_KEY, JSON.stringify(threads));
+  var SPECIALIST_THRESHOLD = 10;
+  function specialistBadge(helpfulCount) {
+    if (helpfulCount >= SPECIALIST_THRESHOLD) return ' <span class="table-tag" title="' + helpfulCount + ' respostas marcadas como úteis">🏅 Especialista</span>';
+    return '';
   }
-
-  function getDisplayName() {
-    return localStorage.getItem(NAME_KEY) || '';
-  }
-
-  var forum = loadForum();
 
   /* ---------- Gamification ---------- */
   function computeGamStats() {
     var watched = 0;
     data.courses.forEach(function (c) { c.lessons.forEach(function (l) { if (progress[l.id]) watched++; }); });
     var completedCourses = data.courses.filter(function (c) { return courseProgress(c) === 100; }).length;
-    var myQuestions = forum.filter(function (t) { return t.authorIsMe; }).length;
+    var myQuestions = forum.filter(function (t) { return t.author_id === myId; }).length;
     var myAnswers = 0;
-    forum.forEach(function (t) { t.answers.forEach(function (a) { if (a.authorIsMe) myAnswers++; }); });
+    forum.forEach(function (t) { (t.forum_answers || []).forEach(function (a) { if (a.author_id === myId) myAnswers++; }); });
 
     var xp = watched * 10 + completedCourses * 50 + myQuestions * 5 + myAnswers * 20;
 
@@ -452,7 +451,8 @@ async function initApp(myId) {
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
-  function timeAgo(ts) {
+  function timeAgo(isoOrTs) {
+    var ts = typeof isoOrTs === 'number' ? isoOrTs : new Date(isoOrTs).getTime();
     var diff = Math.max(0, Date.now() - ts);
     var min = Math.round(diff / 60000);
     if (min < 1) return 'agora mesmo';
@@ -525,24 +525,34 @@ async function initApp(myId) {
 
   /* ---------- Forum rendering ---------- */
   function renderForum() {
-    var sorted = forum.slice().sort(function (a, b) { return b.createdAt - a.createdAt; });
+    var sorted = forum.slice().sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
     var el = document.getElementById('forumList');
     if (!sorted.length) { el.innerHTML = '<div class="empty-state">Nenhuma dúvida publicada ainda. Seja o primeiro a perguntar.</div>'; return; }
 
     el.innerHTML = sorted.map(function (t) {
-      var answered = t.answers.length > 0;
+      var answers = t.forum_answers || [];
+      var answered = answers.length > 0;
       var expanded = !!expandedThreads[t.id];
-      var answersHtml = t.answers.slice().sort(function (a, b) { return a.createdAt - b.createdAt; }).map(function (a) {
-        return '<div class="answer-item"><div class="thread-meta"><strong>' + escapeHtml(a.author) + '</strong><span>' + timeAgo(a.createdAt) + '</span></div><p>' + escapeHtml(a.body) + '</p></div>';
+      var iAskedThis = t.author_id === myId;
+      var answersHtml = answers.slice().sort(function (a, b) { return new Date(a.created_at) - new Date(b.created_at); }).map(function (a) {
+        var authorName = (a.profiles && a.profiles.full_name) || 'Aluno(a) do Clube';
+        var helpfulCount = (a.profiles && a.profiles.helpful_answers_count) || 0;
+        var rateRow = iAskedThis
+          ? '<div style="display:flex;gap:8px;margin-top:8px;">' +
+              '<button type="button" class="btn btn-outline btn-sm" data-mark-helpful="' + a.id + '" style="' + (a.helpful === true ? 'background:var(--ink);color:#fff;' : '') + '">✓ Resolveu</button>' +
+              '<button type="button" class="btn btn-outline btn-sm" data-mark-unhelpful="' + a.id + '" style="' + (a.helpful === false ? 'background:var(--ink);color:#fff;' : '') + '">✗ Não resolveu</button>' +
+            '</div>'
+          : (a.helpful === true ? '<span class="status-pill answered" style="margin-top:8px;display:inline-block;">✓ Resolveu a dúvida</span>' : '');
+        return '<div class="answer-item"><div class="thread-meta"><strong>' + escapeHtml(authorName) + '</strong>' + specialistBadge(helpfulCount) + '<span>' + timeAgo(a.created_at) + '</span></div><p>' + escapeHtml(a.body) + '</p>' + rateRow + '</div>';
       }).join('');
 
       return '<div class="forum-thread' + (answered ? '' : ' is-open') + '" data-thread="' + t.id + '">' +
         '<div class="thread-head">' +
-          '<div class="thread-meta"><strong>' + escapeHtml(t.author) + '</strong><span class="table-tag">' + escapeHtml(t.tag) + '</span><span>' + timeAgo(t.createdAt) + '</span></div>' +
+          '<div class="thread-meta"><strong>' + escapeHtml(threadAuthorName(t)) + '</strong><span class="table-tag">' + escapeHtml(t.tag) + '</span><span>' + timeAgo(t.created_at) + '</span></div>' +
           '<span class="status-pill ' + (answered ? 'answered' : 'open') + '">' + (answered ? 'Respondida' : 'Aberta') + '</span>' +
         '</div>' +
         '<p class="thread-body">' + escapeHtml(t.body) + '</p>' +
-        '<button type="button" class="thread-toggle" data-toggle="' + t.id + '">' + (t.answers.length) + (t.answers.length === 1 ? ' resposta' : ' respostas') + (expanded ? ' — ocultar' : ' — ver e responder') + '</button>' +
+        '<button type="button" class="thread-toggle" data-toggle="' + t.id + '">' + (answers.length) + (answers.length === 1 ? ' resposta' : ' respostas') + (expanded ? ' — ocultar' : ' — ver e responder') + '</button>' +
         '<div class="thread-answers' + (expanded ? ' expanded' : '') + '">' +
           (answersHtml || '<div class="empty-state" style="padding:14px 0;">Ainda sem respostas — seja o primeiro a ajudar.</div>') +
           '<div class="reply-row">' +
@@ -552,6 +562,35 @@ async function initApp(myId) {
         '</div>' +
       '</div>';
     }).join('');
+  }
+
+  /* ---------- Ranking rendering ---------- */
+  async function renderRanking() {
+    var pool = [];
+    try { pool = await ForumAPI.loadRanking(100); } catch (e) { pool = []; }
+
+    var byEngagement = pool.slice().sort(function (a, b) { return (b.engagement_points || 0) - (a.engagement_points || 0); }).slice(0, 20);
+    var byStreak = pool.slice().sort(function (a, b) { return (b.case_best_streak || 0) - (a.case_best_streak || 0); }).slice(0, 20);
+
+    var engEl = document.getElementById('rankingEngagementBody');
+    engEl.innerHTML = byEngagement.length
+      ? byEngagement.map(function (p, i) {
+          var isMe = p.id === myId;
+          return '<tr' + (isMe ? ' style="background:rgba(151,221,171,.12);font-weight:700;"' : '') + '>' +
+            '<td>' + (i + 1) + '</td><td>' + escapeHtml(p.full_name || '(sem nome)') + (isMe ? ' <span class="table-tag">Você</span>' : '') + specialistBadge(p.helpful_answers_count || 0) + '</td>' +
+            '<td>' + escapeHtml(p.profession || '—') + '</td><td>' + (p.engagement_points || 0) + '</td></tr>';
+        }).join('')
+      : '<tr><td colspan="4"><div class="empty-state">Ninguém pontuou ainda — publique ou responda uma dúvida.</div></td></tr>';
+
+    var streakEl = document.getElementById('rankingStreakBody');
+    streakEl.innerHTML = byStreak.length && byStreak[0].case_best_streak > 0
+      ? byStreak.filter(function (p) { return p.case_best_streak > 0; }).map(function (p, i) {
+          var isMe = p.id === myId;
+          return '<tr' + (isMe ? ' style="background:rgba(151,221,171,.12);font-weight:700;"' : '') + '>' +
+            '<td>' + (i + 1) + '</td><td>' + escapeHtml(p.full_name || '(sem nome)') + (isMe ? ' <span class="table-tag">Você</span>' : '') + '</td>' +
+            '<td>' + escapeHtml(p.profession || '—') + '</td><td>' + p.case_best_streak + '</td></tr>';
+        }).join('')
+      : '<tr><td colspan="4"><div class="empty-state">Ninguém acertou um caso clínico ainda em "Na Prática".</div></td></tr>';
   }
 
   function escapeHtml(str) {
@@ -636,26 +675,29 @@ async function initApp(myId) {
     if (box.checked) toast('Aula concluída · +10 XP');
   });
 
-  document.getElementById('questionAuthor').value = getDisplayName();
-
-  document.getElementById('questionForm').addEventListener('submit', function (e) {
+  document.getElementById('questionForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    var author = document.getElementById('questionAuthor').value.trim() || 'Você';
     var tag = document.getElementById('questionTag').value;
     var body = document.getElementById('questionBody').value.trim();
     if (!body) return;
-    localStorage.setItem(NAME_KEY, author);
-    forum.push({ id: CIStore.uid('th'), authorIsMe: true, author: author, tag: tag, body: body, createdAt: Date.now(), answers: [] });
-    saveForum(forum);
-    renderForum();
-    var s = renderLevel();
-    renderAchievements(s);
-    e.target.reset();
-    document.getElementById('questionAuthor').value = author;
-    toast('Dúvida publicada · +5 XP');
+    var btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true;
+    try {
+      await ForumAPI.createThread(myId, tag, body);
+      await loadForum();
+      renderForum();
+      await renderRanking();
+      var s = renderLevel();
+      renderAchievements(s);
+      e.target.reset();
+      toast('Dúvida publicada · +5 pts');
+    } catch (err) {
+      toast('Erro ao publicar: ' + err.message);
+    }
+    btn.disabled = false;
   });
 
-  document.getElementById('forumList').addEventListener('click', function (e) {
+  document.getElementById('forumList').addEventListener('click', async function (e) {
     var toggleBtn = e.target.closest('[data-toggle]');
     if (toggleBtn) {
       var tid = toggleBtn.getAttribute('data-toggle');
@@ -669,31 +711,42 @@ async function initApp(myId) {
       var textarea = document.querySelector('textarea[data-reply="' + threadId + '"]');
       var body = textarea.value.trim();
       if (!body) return;
-      var author = getDisplayName() || document.getElementById('questionAuthor').value.trim() || 'Você';
-      var thread = forum.find(function (t) { return t.id === threadId; });
-      if (!thread) return;
-      thread.answers.push({ id: CIStore.uid('a'), authorIsMe: true, author: author, body: body, createdAt: Date.now() });
-      saveForum(forum);
-      expandedThreads[threadId] = true;
-      renderForum();
-      var s = renderLevel();
-      renderAchievements(s);
-      toast('Resposta publicada · +20 XP');
+      sendBtn.disabled = true;
+      try {
+        await ForumAPI.createAnswer(threadId, myId, body);
+        await loadForum();
+        expandedThreads[threadId] = true;
+        renderForum();
+        await renderRanking();
+        var s = renderLevel();
+        renderAchievements(s);
+        toast('Resposta publicada · +15 pts');
+      } catch (err) {
+        toast('Erro ao responder: ' + err.message);
+        sendBtn.disabled = false;
+      }
+      return;
+    }
+    var helpfulBtn = e.target.closest('[data-mark-helpful], [data-mark-unhelpful]');
+    if (helpfulBtn) {
+      var answerId = helpfulBtn.getAttribute('data-mark-helpful') || helpfulBtn.getAttribute('data-mark-unhelpful');
+      var isHelpful = helpfulBtn.hasAttribute('data-mark-helpful');
+      helpfulBtn.disabled = true;
+      try {
+        await ForumAPI.markAnswerHelpful(answerId, isHelpful);
+        await loadForum();
+        renderForum();
+        await renderRanking();
+      } catch (err) {
+        toast('Erro ao avaliar resposta: ' + err.message);
+      }
+      helpfulBtn.disabled = false;
     }
   });
 
-  // Cross-tab sync: if another tab (e.g. a colleague on the same computer) posts or
-  // answers a question, this tab reflects it immediately via the native storage event.
-  window.addEventListener('storage', function (e) {
-    if (e.key === FORUM_KEY) {
-      forum = loadForum();
-      renderForum();
-      var s = renderLevel();
-      renderAchievements(s);
-    }
-  });
-
+  await loadForum();
   renderAll();
+  renderRanking();
 }
 
 (function () {

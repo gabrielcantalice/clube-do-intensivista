@@ -57,6 +57,42 @@ returns boolean as $$
   );
 $$ language sql security definer stable;
 
+-- Pontuação de engajamento (ranking): pergunta/resposta na Central de Dúvidas
+-- e acerto no teste clínico (Na Prática). Só o próprio usuário logado pontua
+-- pra si mesmo — a função roda como "security definer" pra não precisar de
+-- uma policy de update liberada, o que evitaria alguém alterar XP de outro.
+alter table public.profiles add column if not exists engagement_points integer not null default 0;
+alter table public.profiles add column if not exists case_streak integer not null default 0;
+alter table public.profiles add column if not exists case_best_streak integer not null default 0;
+
+create or replace function public.add_engagement_points(amount int)
+returns void as $$
+begin
+  update public.profiles set engagement_points = engagement_points + amount where id = auth.uid();
+end;
+$$ language plpgsql security definer;
+
+grant execute on function public.add_engagement_points(int) to authenticated;
+
+-- Registra uma resposta do teste clínico (Na Prática): acerto soma XP e
+-- avança a sequência; erro zera a sequência atual (o recorde fica salvo).
+create or replace function public.record_case_answer(is_correct boolean)
+returns void as $$
+begin
+  if is_correct then
+    update public.profiles
+      set case_streak = case_streak + 1,
+          case_best_streak = greatest(case_best_streak, case_streak + 1),
+          engagement_points = engagement_points + 5
+      where id = auth.uid();
+  else
+    update public.profiles set case_streak = 0 where id = auth.uid();
+  end if;
+end;
+$$ language plpgsql security definer;
+
+grant execute on function public.record_case_answer(boolean) to authenticated;
+
 -- =========================================================
 -- 2. CURSOS E AULAS
 -- =========================================================
@@ -262,6 +298,44 @@ create policy "Todo mundo vê as respostas" on public.forum_answers for select u
 drop policy if exists "Aluno logado responde dúvida" on public.forum_answers;
 create policy "Aluno logado responde dúvida" on public.forum_answers for insert
   to authenticated with check (author_id = auth.uid());
+
+-- Quem perguntou marca se a resposta resolveu ou não; respostas úteis contam
+-- pro selo de "Especialista do Clube" e dão pontos extra pra quem respondeu.
+alter table public.forum_answers add column if not exists helpful boolean;
+alter table public.profiles add column if not exists helpful_answers_count integer not null default 0;
+
+create or replace function public.mark_answer_helpful(p_answer_id uuid, p_is_helpful boolean)
+returns void as $$
+declare
+  ans record;
+begin
+  select fa.id, fa.author_id, fa.helpful, ft.author_id as thread_author_id
+    into ans
+    from public.forum_answers fa
+    join public.forum_threads ft on ft.id = fa.thread_id
+    where fa.id = p_answer_id;
+
+  if not found then
+    return;
+  end if;
+
+  if ans.thread_author_id is distinct from auth.uid() then
+    raise exception 'Só quem fez a pergunta pode avaliar a resposta.';
+  end if;
+
+  if ans.helpful is distinct from p_is_helpful then
+    update public.forum_answers set helpful = p_is_helpful where id = p_answer_id;
+
+    if p_is_helpful = true then
+      update public.profiles set helpful_answers_count = helpful_answers_count + 1, engagement_points = engagement_points + 10 where id = ans.author_id;
+    elsif ans.helpful = true then
+      update public.profiles set helpful_answers_count = greatest(helpful_answers_count - 1, 0) where id = ans.author_id;
+    end if;
+  end if;
+end;
+$$ language plpgsql security definer;
+
+grant execute on function public.mark_answer_helpful(uuid, boolean) to authenticated;
 
 -- =========================================================
 -- 9. HABILITAR REALTIME (para a Central de Dúvidas atualizar sozinha na tela)

@@ -171,6 +171,7 @@
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
+<script src="js/forum-api.js"></script>
 <script src="js/main.js"></script>
 <script>
 window.getSupabaseClient().auth.getSession().then(function (res) {
@@ -178,6 +179,15 @@ window.getSupabaseClient().auth.getSession().then(function (res) {
   if (!session) { window.location.href = 'entrar.html'; return; }
   document.getElementById('authGate').style.display = 'none';
   document.getElementById('pageContent').style.visibility = 'visible';
+});
+
+// Cada acerto soma pontos no ranking de engajamento e avança a sequência de
+// acertos seguidos; um erro zera a sequência atual (o recorde fica salvo).
+document.querySelectorAll('.case-option').forEach(function (opt) {
+  opt.addEventListener('click', function () {
+    var isCorrect = opt.getAttribute('data-correct') === 'true';
+    ForumAPI.recordCaseAnswer(isCorrect);
+  });
 });
 </script>
 </body>

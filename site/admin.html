@@ -387,15 +387,26 @@
       <div class="app-card">
         <div class="app-card-head">
           <div>
-            <h3>Ranking (demonstração)</h3>
-            <p>Ordenado por nível/XP. Ainda usa dados de exemplo — o ranking com XP real de todos os membros entra quando migrarmos o progresso para o banco de dados.</p>
+            <h3>Ranking de engajamento</h3>
+            <p>Publicar dúvida vale 5 pts, responder vale 15 pts (+10 se marcada como útil), acertar um caso em "Na Prática" vale 5 pts.</p>
           </div>
         </div>
         <div class="table-scroll"><table class="data-table">
-          <thead><tr><th>#</th><th>Membro</th><th>Perfil</th><th>Cursos</th><th>Nível</th><th>XP</th></tr></thead>
-          <tbody id="membersBody"></tbody>
+          <thead><tr><th>#</th><th>Membro</th><th>Perfil</th><th>Pontos</th></tr></thead>
+          <tbody id="rankingEngagementBody"></tbody>
         </table></div>
-        <p class="form-note" style="margin-top:14px;">A linha "Você" reflete o progresso real deste navegador — cursos assistidos e participação na Central de Dúvidas.</p>
+      </div>
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Sequência de acertos</h3>
+            <p>Maior sequência de respostas certas seguidas nos casos clínicos de "Na Prática".</p>
+          </div>
+        </div>
+        <div class="table-scroll"><table class="data-table">
+          <thead><tr><th>#</th><th>Membro</th><th>Perfil</th><th>Sequência</th></tr></thead>
+          <tbody id="rankingStreakBody"></tbody>
+        </table></div>
       </div>
     </section>
 
@@ -530,6 +541,7 @@
 <script src="js/data-store.js"></script>
 <script src="js/courses-api.js"></script>
 <script src="js/events-api.js"></script>
+<script src="js/forum-api.js"></script>
 <script>
 var sb = window.getSupabaseClient();
 
@@ -636,21 +648,35 @@ async function initApp() {
     }).join('');
   }
 
-  async function renderMembers() {
-    var myProgress = await CoursesAPI.loadProgress(myId);
-    var my = CIStore.computeMyStats(courses, myProgress);
-    var myLevel = CIStore.levelForXp(my.xp);
-    var rows = data.members.map(function (m) {
-      var level = CIStore.levelForXp(m.xp);
-      return { name: m.name, profession: m.profession, courses: m.courses, xp: m.xp, title: level.title, isMe: false };
-    });
-    rows.push({ name: 'Você', profession: 'Sua conta neste navegador', courses: courses.length, xp: my.xp, title: myLevel.title, isMe: true });
-    rows.sort(function (a, b) { return b.xp - a.xp; });
+  var SPECIALIST_THRESHOLD = 10;
+  function specialistBadge(helpfulCount) {
+    if (helpfulCount >= SPECIALIST_THRESHOLD) return ' <span class="table-tag" title="' + helpfulCount + ' respostas marcadas como úteis">🏅 Especialista</span>';
+    return '';
+  }
 
-    document.getElementById('membersBody').innerHTML = rows.map(function (r, i) {
-      var style = r.isMe ? ' style="background:rgba(151,221,171,.12);font-weight:700;"' : '';
-      return '<tr' + style + '><td>' + (i + 1) + '</td><td>' + r.name + (r.isMe ? ' <span class="table-tag">Você</span>' : '') + '</td><td>' + r.profession + '</td><td>' + r.courses + '</td><td>' + r.title + '</td><td>' + r.xp + '</td></tr>';
-    }).join('');
+  async function renderMembers() {
+    var pool = [];
+    try { pool = await ForumAPI.loadRanking(100); } catch (err) { pool = []; }
+
+    var byEngagement = pool.slice().sort(function (a, b) { return (b.engagement_points || 0) - (a.engagement_points || 0); }).slice(0, 20);
+    var byStreak = pool.slice().sort(function (a, b) { return (b.case_best_streak || 0) - (a.case_best_streak || 0); }).slice(0, 20);
+
+    var engEl = document.getElementById('rankingEngagementBody');
+    engEl.innerHTML = byEngagement.length
+      ? byEngagement.map(function (p, i) {
+          return '<tr><td>' + (i + 1) + '</td><td>' + (p.full_name || '(sem nome)') + specialistBadge(p.helpful_answers_count || 0) + '</td>' +
+            '<td>' + (p.profession || '—') + '</td><td>' + (p.engagement_points || 0) + '</td></tr>';
+        }).join('')
+      : '<tr><td colspan="4"><div class="empty-state">Ninguém pontuou ainda.</div></td></tr>';
+
+    var streakEl = document.getElementById('rankingStreakBody');
+    var withStreak = byStreak.filter(function (p) { return p.case_best_streak > 0; });
+    streakEl.innerHTML = withStreak.length
+      ? withStreak.map(function (p, i) {
+          return '<tr><td>' + (i + 1) + '</td><td>' + (p.full_name || '(sem nome)') + specialistBadge(p.helpful_answers_count || 0) + '</td>' +
+            '<td>' + (p.profession || '—') + '</td><td>' + p.case_best_streak + '</td></tr>';
+        }).join('')
+      : '<tr><td colspan="4"><div class="empty-state">Ninguém acertou um caso clínico ainda.</div></td></tr>';
   }
 
   async function callAdminMembersApi(payload) {
