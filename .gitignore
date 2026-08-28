@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.local
+.vercel
+*.log
+.claude/
+site/apresentacao.html
+site/apresentacao-v2.html

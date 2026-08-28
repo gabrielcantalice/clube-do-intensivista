@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca do Intensivista | Clube do Intensivista</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.svg" class="logo-mark" alt="Clube do Intensivista">
+      <span class="brand-text"><strong>Clube do Intensivista</strong><span>Terapia Intensiva &amp; Emergência</span></span>
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Início</a>
+      <a href="cursos.html">Cursos</a>
+      <a href="materiais.html" class="active">Materiais</a>
+      <a href="conteudos.html">Conteúdos</a>
+      <a href="agenda.html">Agenda</a>
+      <a href="pratica.html">Na Prática</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+    <div class="site-header-actions">
+      <a href="area-aluno.html" class="link-quiet">Área do aluno</a>
+      <a href="cursos.html" class="btn btn-primary btn-sm">Quero me inscrever</a>
+      <button class="nav-toggle" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Início</a> / Materiais</div>
+    <h1>Biblioteca do Intensivista</h1>
+    <p style="max-width:600px;color:rgba(255,255,255,.85);">E-books, apostilas, protocolos, guias rápidos e aulas gravadas para consultar sempre que precisar. Basta se cadastrar gratuitamente.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="filter-bar" data-target="materiais">
+      <button class="filter-chip active" data-filter="todos">Todos</button>
+      <button class="filter-chip" data-filter="gratuito">Gratuitos</button>
+      <button class="filter-chip" data-filter="ebook">E-books</button>
+      <button class="filter-chip" data-filter="protocolo">Protocolos</button>
+      <button class="filter-chip" data-filter="aula">Aulas gravadas</button>
+    </div>
+
+    <div class="grid grid-4" id="materiaisGrid">
+      <div class="card" data-group="materiais" data-category="gratuito">
+        <div class="card-media"><span class="tag">Gratuito</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Guia de Gasometria Arterial</h3>
+          <p style="font-size:.85rem;">E-book essencial de bolso para leitura rápida à beira-leito.</p>
+          <a href="#" class="btn btn-outline btn-sm">Baixar grátis</a>
+        </div>
+      </div>
+      <div class="card" data-group="materiais" data-category="protocolo">
+        <div class="card-media"><span class="tag">Protocolo</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Protocolo de Sepse</h3>
+          <p style="font-size:.85rem;">Fluxo institucional passo a passo, pronto para consulta.</p>
+          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
+        </div>
+      </div>
+      <div class="card" data-group="materiais" data-category="ebook">
+        <div class="card-media"><span class="tag">E-book</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Desmame Ventilatório</h3>
+          <p style="font-size:.85rem;">Passo a passo com checklists práticos.</p>
+          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
+        </div>
+      </div>
+      <div class="card" data-group="materiais" data-category="aula">
+        <div class="card-media"><span class="tag">Aula gravada</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Hemodinâmica na Prática</h3>
+          <p style="font-size:.85rem;">Aula gravada + material de apoio em PDF.</p>
+          <a href="#" class="btn btn-outline btn-sm">Assistir</a>
+        </div>
+      </div>
+      <div class="card" data-group="materiais" data-category="gratuito protocolo">
+        <div class="card-media"><span class="tag">Gratuito</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Checklist de Admissão na UTI</h3>
+          <p style="font-size:.85rem;">Guia rápido para não esquecer nenhum passo.</p>
+          <a href="#" class="btn btn-outline btn-sm">Baixar grátis</a>
+        </div>
+      </div>
+      <div class="card" data-group="materiais" data-category="ebook">
+        <div class="card-media"><span class="tag">E-book</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Neurologia na UTI</h3>
+          <p style="font-size:.85rem;">Avaliação neurológica objetiva e prática.</p>
+          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
+        </div>
+      </div>
+      <div class="card" data-group="materiais" data-category="protocolo">
+        <div class="card-media"><span class="tag">Protocolo</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Manejo de Vias Aéreas Difíceis</h3>
+          <p style="font-size:.85rem;">Fluxograma direto para decisão rápida.</p>
+          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
+        </div>
+      </div>
+      <div class="card" data-group="materiais" data-category="aula gratuito">
+        <div class="card-media"><span class="tag">Gratuito</span></div>
+        <div class="card-body">
+          <h3 style="font-size:1rem;">Aula: Leitura de Gasometria</h3>
+          <p style="font-size:.85rem;">Aula introdutória gravada, aberta a todos.</p>
+          <a href="#" class="btn btn-outline btn-sm">Assistir grátis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-alt">
+  <div class="wrap">
+    <div class="lead-box">
+      <div class="lead-visual">
+        <span class="tag-pill">Comece por aqui</span>
+        <h2 style="margin:0;">Crie sua conta gratuita no Clube</h2>
+        <p>Cadastre-se para acessar todos os materiais gratuitos da Biblioteca do Intensivista.</p>
+      </div>
+      <div class="lead-form">
+        <form class="js-lead-form">
+          <div class="form-row"><label>Nome</label><input type="text" placeholder="Seu nome" required></div>
+          <div class="form-row"><label>E-mail</label><input type="email" placeholder="seuemail@exemplo.com" required></div>
+          <div class="form-row"><label>Profissão</label><select>
+            <option>Enfermagem</option><option>Fisioterapia</option><option>Medicina</option><option>Estudante</option><option>Outra</option>
+          </select></div>
+          <button type="submit" class="btn btn-primary btn-block">Criar minha conta gratuita</button>
+          <p class="form-note">Sem custo. Você poderá acessar cursos, e-books e conteúdos do Clube com este cadastro.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo-white.svg" class="logo-mark" alt="Clube do Intensivista">
+        Clube do Intensivista
+      </div>
+      <p style="font-size:.88rem;max-width:280px;">Conhecimento que transforma a prática na UTI.</p>
+      <div class="social-row">
+        <a href="https://instagram.com/clubedointensivista" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
+        <a href="https://wa.me/5500000000000" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>
+      </div>
+    </div>
+    <div>
+      <h5>Navegação</h5>
+      <ul>
+        <li><a href="cursos.html">Cursos</a></li>
+        <li><a href="materiais.html">Materiais</a></li>
+        <li><a href="conteudos.html">Conteúdos</a></li>
+        <li><a href="agenda.html">Agenda</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Institucional</h5>
+      <ul>
+        <li><a href="sobre.html">Sobre o Clube</a></li>
+        <li><a href="pratica.html">Na Prática</a></li>
+        <li><a href="area-aluno.html">Área do aluno</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Contato</h5>
+      <ul>
+        <li>contato@clubedointensivista.com.br</li>
+        <li>WhatsApp: (00) 00000-0000</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Clube do Intensivista. Todos os direitos reservados.</span>
+    <a href="admin.html" style="color:rgba(255,255,255,.4);font-size:.78rem;">Painel administrativo</a>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="https://wa.me/5500000000000" target="_blank" rel="noopener" aria-label="Fale com o Clube no WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.5c1.5.9 3.3 1.4 5.2 1.4 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.7 0-3.3-.5-4.7-1.3l-.3-.2-2.8.9.9-2.7-.2-.3C4 15 3.5 13.5 3.5 12c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5zm4.6-6.3c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/></svg>
+</a>
+
+<script src="js/data-store.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  var data = CIStore.load();
+  var extra = data.materials.filter(function (m) { return CIStore.SEED_IDS.materials.indexOf(m.id) === -1; });
+  if (!extra.length) return;
+  var grid = document.getElementById('materiaisGrid');
+  extra.forEach(function (m) {
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('data-group', 'materiais');
+    card.setAttribute('data-category', 'gratuito');
+    card.innerHTML =
+      '<div class="card-media"><span class="tag">Novo</span></div>' +
+      '<div class="card-body">' +
+        '<h3 style="font-size:1rem;">' + m.title + '</h3>' +
+        '<p style="font-size:.85rem;">' + m.type + ' disponível na biblioteca do Clube.</p>' +
+        '<a href="#" class="btn btn-outline btn-sm" onclick="return false;">Ver material</a>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clube do Intensivista na Prática | Clube do Intensivista</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="index.html" class="brand">
+      <img src="assets/logo.svg" class="logo-mark" alt="Clube do Intensivista">
+      <span class="brand-text"><strong>Clube do Intensivista</strong><span>Terapia Intensiva &amp; Emergência</span></span>
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Início</a>
+      <a href="cursos.html">Cursos</a>
+      <a href="materiais.html">Materiais</a>
+      <a href="conteudos.html">Conteúdos</a>
+      <a href="agenda.html">Agenda</a>
+      <a href="pratica.html" class="active">Na Prática</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+    <div class="site-header-actions">
+      <a href="area-aluno.html" class="link-quiet">Área do aluno</a>
+      <a href="cursos.html" class="btn btn-primary btn-sm">Quero me inscrever</a>
+      <button class="nav-toggle" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Início</a> / Na Prática</div>
+    <h1>Clube do Intensivista na Prática</h1>
+    <p style="max-width:620px;color:rgba(255,255,255,.85);">Casos clínicos interativos como os que você encontra de plantão. Responda, veja o comentário e teste seu raciocínio.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap" style="display:flex;flex-direction:column;gap:40px;">
+
+    <div class="case-box">
+      <span class="eyebrow">Caso 1 · Ventilação Mecânica</span>
+      <h3>Paciente em ventilação mecânica apresenta:</h3>
+      <div class="case-vitals">
+        <div class="vital"><strong>120</strong><span>P/F ratio</span></div>
+        <div class="vital"><strong>10</strong><span>PEEP (cmH₂O)</span></div>
+        <div class="vital"><strong>60%</strong><span>FiO₂</span></div>
+        <div class="vital"><strong>↓</strong><span>Complacência</span></div>
+      </div>
+      <p style="font-weight:700;color:var(--ink);">O que você faria agora?</p>
+      <div class="case-options">
+        <button class="case-option" data-correct="false">Reduzir a PEEP imediatamente</button>
+        <button class="case-option" data-correct="true">Considerar manobra de recrutamento e otimizar PEEP conforme complacência</button>
+        <button class="case-option" data-correct="false">Aumentar o volume corrente para melhorar a oxigenação</button>
+        <button class="case-option" data-correct="false">Extubar e reavaliar em ar ambiente</button>
+      </div>
+      <div class="case-feedback">
+        <strong>Comentário:</strong> quadro compatível com SDRA moderada (P/F 120). A conduta prioriza estratégia protetora, titulação de PEEP guiada por complacência/oxigenação e reavaliação de resposta — evitando aumento de volume corrente, que eleva o risco de lesão pulmonar induzida pela ventilação.
+      </div>
+    </div>
+
+    <div class="case-box">
+      <span class="eyebrow">Caso 2 · Hemodinâmica</span>
+      <h3>Paciente séptico, 2h após início da ressuscitação volêmica, apresenta:</h3>
+      <div class="case-vitals">
+        <div class="vital"><strong>78x60</strong><span>PA (mmHg)</span></div>
+        <div class="vital"><strong>4,2</strong><span>Lactato (mmol/L)</span></div>
+        <div class="vital"><strong>0,3</strong><span>Diurese (mL/kg/h)</span></div>
+        <div class="vital"><strong>+</strong><span>Extremidades frias</span></div>
+      </div>
+      <p style="font-weight:700;color:var(--ink);">Qual a próxima conduta mais adequada?</p>
+      <div class="case-options">
+        <button class="case-option" data-correct="false">Aguardar e reavaliar em 6 horas</button>
+        <button class="case-option" data-correct="false">Suspender antibiótico e repetir culturas</button>
+        <button class="case-option" data-correct="true">Reavaliar responsividade a fluidos e considerar início de vasopressor</button>
+        <button class="case-option" data-correct="false">Iniciar diurético para melhorar a diurese</button>
+      </div>
+      <div class="case-feedback">
+        <strong>Comentário:</strong> sinais de hipoperfusão persistente (lactato elevado, oligúria, extremidades frias) após ressuscitação inicial indicam necessidade de reavaliação hemodinâmica estruturada — checando responsividade a fluidos antes de nova infusão e considerando vasopressor precoce para manter PAM adequada.
+      </div>
+    </div>
+
+    <div class="case-box">
+      <span class="eyebrow">Caso 3 · Gasometria Arterial</span>
+      <h3>Gasometria arterial de paciente em pós-operatório imediato:</h3>
+      <div class="case-vitals">
+        <div class="vital"><strong>7,25</strong><span>pH</span></div>
+        <div class="vital"><strong>60</strong><span>PaCO₂</span></div>
+        <div class="vital"><strong>22</strong><span>HCO₃⁻</span></div>
+        <div class="vital"><strong>85</strong><span>PaO₂</span></div>
+      </div>
+      <p style="font-weight:700;color:var(--ink);">Como você classifica este distúrbio?</p>
+      <div class="case-options">
+        <button class="case-option" data-correct="false">Acidose metabólica não compensada</button>
+        <button class="case-option" data-correct="true">Acidose respiratória aguda</button>
+        <button class="case-option" data-correct="false">Alcalose respiratória compensada</button>
+        <button class="case-option" data-correct="false">Distúrbio misto sem repercussão clínica</button>
+      </div>
+      <div class="case-feedback">
+        <strong>Comentário:</strong> pH baixo com PaCO₂ elevado e HCO₃⁻ ainda próximo do normal caracteriza acidose respiratória aguda — sugerindo hipoventilação no pós-operatório imediato, provavelmente por efeito residual anestésico ou dor, exigindo atenção à via aérea e ao padrão ventilatório.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="center" style="margin-top:48px;">
+    <p style="font-size:.95rem;">Quer treinar com casos assim toda semana?</p>
+    <a href="cursos.html" class="btn btn-dark">Conheça nossos cursos</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo-white.svg" class="logo-mark" alt="Clube do Intensivista">
+        Clube do Intensivista
+      </div>
+      <p style="font-size:.88rem;max-width:280px;">Conhecimento que transforma a prática na UTI.</p>
+      <div class="social-row">
+        <a href="https://instagram.com/clubedointensivista" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
+        <a href="https://wa.me/5500000000000" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>
+      </div>
+    </div>
+    <div>
+      <h5>Navegação</h5>
+      <ul>
+        <li><a href="cursos.html">Cursos</a></li>
+        <li><a href="materiais.html">Materiais</a></li>
+        <li><a href="conteudos.html">Conteúdos</a></li>
+        <li><a href="agenda.html">Agenda</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Institucional</h5>
+      <ul>
+        <li><a href="sobre.html">Sobre o Clube</a></li>
+        <li><a href="pratica.html">Na Prática</a></li>
+        <li><a href="area-aluno.html">Área do aluno</a></li>
+        <li><a href="contato.html">Contato</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Contato</h5>
+      <ul>
+        <li>contato@clubedointensivista.com.br</li>
+        <li>WhatsApp: (00) 00000-0000</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Clube do Intensivista. Todos os direitos reservados.</span>
+    <a href="admin.html" style="color:rgba(255,255,255,.4);font-size:.78rem;">Painel administrativo</a>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="https://wa.me/5500000000000" target="_blank" rel="noopener" aria-label="Fale com o Clube no WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.5c1.5.9 3.3 1.4 5.2 1.4 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.7 0-3.3-.5-4.7-1.3l-.3-.2-2.8.9.9-2.7-.2-.3C4 15 3.5 13.5 3.5 12c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5zm4.6-6.3c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/></svg>
+</a>
+
+<script src="js/main.js"></script>
+</body>
+</html>

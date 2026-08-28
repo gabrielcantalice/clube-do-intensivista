@@ -1,0 +1,9 @@
+{
+  "name": "clube-do-intensivista",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Site do Clube do Intensivista — páginas estáticas + funções serverless (Vercel) para integração com Supabase e Hotmart.",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

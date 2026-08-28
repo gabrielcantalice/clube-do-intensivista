@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Administrativo | Clube do Intensivista</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="brand-mini">
+      <img src="assets/logo-white.svg" class="logo-mark" alt="Clube do Intensivista">
+      Clube do Intensivista
+    </div>
+    <span class="app-role-tag" style="color:var(--purple);border-color:rgba(111,103,158,.5);">Painel administrativo</span>
+
+    <nav class="app-nav" id="adminNav">
+      <button data-panel="visao" class="active">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Visão geral
+      </button>
+      <button data-panel="eventos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+        Eventos e agenda
+      </button>
+      <button data-panel="cursos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6.5 12 3l9 3.5-9 3.5-9-3.5Z"/><path d="M7 9.5V16c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V9.5"/></svg>
+        Cursos e aulas
+      </button>
+      <button data-panel="materiais">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4.5h11l3 3V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
+        Biblioteca de materiais
+      </button>
+      <button data-panel="comunicados">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v11H8l-4 3.5v-3.5H4Z"/></svg>
+        Comunicados
+      </button>
+      <button data-panel="membros">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M14.5 14.5c2.4.3 4 2.1 4 4.5"/></svg>
+        Membros
+      </button>
+      <button data-panel="configuracoes">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.5-2.4.7a7.6 7.6 0 0 0-2.6-1.5L14 2h-4l-.4 2.2a7.6 7.6 0 0 0-2.6 1.5l-2.4-.7-2 3.5 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.5 2.4-.7a7.6 7.6 0 0 0 2.6 1.5L10 22h4l.4-2.2a7.6 7.6 0 0 0 2.6-1.5l2.4.7 2-3.5-2-1.5Z"/></svg>
+        Configurações do site
+      </button>
+    </nav>
+
+    <div class="app-sidebar-foot">
+      <a href="index.html">&larr; Ver site publicado</a>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <h1 id="adminTitle">Visão geral</h1>
+        <p id="adminSubtitle">Gerencie eventos, cursos, aulas, materiais, comunicados e membros do Clube.</p>
+      </div>
+      <button class="btn btn-outline btn-sm" id="resetDataBtn">Restaurar dados de exemplo</button>
+    </div>
+
+    <!-- VISÃO GERAL -->
+    <section class="app-panel active" data-panel="visao">
+      <div class="app-stats" id="adminStats"></div>
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Como este painel funciona</h3>
+          </div>
+        </div>
+        <p style="margin:0;font-size:.9rem;">Este é um protótipo funcional: os dados que você cadastrar aqui (eventos, cursos, aulas, materiais, comunicados) ficam salvos neste navegador e já aparecem refletidos na <a href="area-aluno.html" style="color:var(--purple-dark);font-weight:700;">Área do aluno</a>. Cursos, materiais e eventos novos também aparecem automaticamente nas páginas públicas do site (Cursos, Materiais e Agenda). Quando o site for para produção, essas mesmas telas passarão a salvar em um banco de dados real, acessível de qualquer dispositivo — e o login do admin e do aluno passa a ser a mesma tela, com o sistema reconhecendo o perfil de cada um após entrar.</p>
+      </div>
+    </section>
+
+    <!-- EVENTOS -->
+    <section class="app-panel" data-panel="eventos">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Novo evento</h3>
+            <p>Aparece na Agenda do Clube e na home.</p>
+          </div>
+        </div>
+        <form class="app-form" id="eventForm">
+          <div>
+            <label>Título do evento</label>
+            <input type="text" id="evTitle" placeholder="Ex: Live sobre sedação na UTI" required>
+          </div>
+          <div>
+            <label>Data</label>
+            <input type="date" id="evDate" required>
+          </div>
+          <div>
+            <label>Tipo</label>
+            <select id="evType">
+              <option>Curso presencial</option>
+              <option>Curso online</option>
+              <option>Live gratuita</option>
+              <option>Outro evento</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Link de inscrição externo (opcional)</label>
+            <input type="url" id="evExternalLink" placeholder="Preencha só se a inscrição for paga, fora do site (ex: Hotmart)">
+          </div>
+          <div class="full" style="align-self:flex-end;">
+            <button type="submit" class="btn btn-primary">Adicionar evento</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Próximos eventos</h3>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Data</th><th>Evento</th><th>Tipo</th><th></th></tr></thead>
+          <tbody id="eventsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CURSOS E AULAS -->
+    <section class="app-panel" data-panel="cursos">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Criar novo curso</h3>
+            <p>Aparece imediatamente na página pública de Cursos.</p>
+          </div>
+        </div>
+        <form class="app-form" id="courseForm">
+          <div class="full">
+            <label>Nome do curso</label>
+            <input type="text" id="courseTitle" placeholder="Ex: Sedação e Analgesia na UTI" required>
+          </div>
+          <div>
+            <label>Modalidade</label>
+            <select id="courseModality">
+              <option>Presencial</option>
+              <option>Online</option>
+            </select>
+          </div>
+          <div>
+            <label>Carga horária</label>
+            <input type="text" id="courseWorkload" placeholder="Ex: 12h">
+          </div>
+          <div class="full">
+            <label>Descrição curta</label>
+            <textarea id="courseDescription" rows="2" placeholder="Uma frase sobre o que o aluno aprende neste curso"></textarea>
+          </div>
+          <div class="full" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
+            <label style="margin-bottom:2px;">Curso pago em plataforma externa (opcional)</label>
+            <p style="margin:0 0 10px;font-size:.78rem;color:var(--ink-soft);">Preencha só se este curso for vendido fora do site (ex: Hotmart). Se preenchido, o botão "Inscrever-se" leva direto para esse link em vez do fluxo gratuito interno.</p>
+          </div>
+          <div>
+            <label>Valor / investimento</label>
+            <input type="text" id="courseExternalPrice" placeholder="Ex: R$ 397 ou 12x de R$ 39,70">
+          </div>
+          <div>
+            <label>Link de inscrição/pagamento</label>
+            <input type="url" id="courseExternalLink" placeholder="https://pay.hotmart.com/...">
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-primary">Criar curso</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Cursos</h3>
+            <p>Selecione um curso para gerenciar suas aulas.</p>
+          </div>
+          <button class="btn-danger" id="deleteCourseBtn">Remover curso selecionado</button>
+        </div>
+        <div class="course-select-chip" id="adminCourseChips"></div>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Nova aula</h3>
+            <p id="adminSelectedCourseLabel"></p>
+          </div>
+        </div>
+        <form class="app-form" id="lessonForm">
+          <div>
+            <label>Título da aula</label>
+            <input type="text" id="lessonTitle" placeholder="Ex: Manejo de PEEP na prática" required>
+          </div>
+          <div>
+            <label>Duração</label>
+            <input type="text" id="lessonDuration" placeholder="Ex: 35 min" required>
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-primary">Adicionar aula</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Aulas do curso</h3>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Aula</th><th>Duração</th><th></th></tr></thead>
+          <tbody id="lessonsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MATERIAIS -->
+    <section class="app-panel" data-panel="materiais">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Novo material</h3>
+            <p>Aparece na Biblioteca do Intensivista e na Área do aluno.</p>
+          </div>
+        </div>
+        <form class="app-form" id="materialForm">
+          <div>
+            <label>Título do material</label>
+            <input type="text" id="matTitle" placeholder="Ex: Guia de Sedação e Analgesia" required>
+          </div>
+          <div>
+            <label>Tipo</label>
+            <select id="matType">
+              <option>E-book</option>
+              <option>Apostila</option>
+              <option>Protocolo</option>
+              <option>Guia rápido</option>
+              <option>Aula gravada</option>
+            </select>
+          </div>
+          <div class="full" style="align-self:flex-end;">
+            <button type="submit" class="btn btn-primary">Adicionar material</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Materiais cadastrados</h3>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Material</th><th>Tipo</th><th></th></tr></thead>
+          <tbody id="materialsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- COMUNICADOS -->
+    <section class="app-panel" data-panel="comunicados">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Enviar comunicado</h3>
+            <p>Aparece imediatamente na Área do aluno de todos os alunos.</p>
+          </div>
+        </div>
+        <form class="app-form" id="announcementForm">
+          <div class="full">
+            <label>Mensagem</label>
+            <textarea id="anText" rows="2" placeholder="Ex: Novo material sobre desmame ventilatório disponível na biblioteca." required></textarea>
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-primary">Publicar comunicado</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Comunicados publicados</h3>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Data</th><th>Mensagem</th><th></th></tr></thead>
+          <tbody id="announcementsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MEMBROS -->
+    <section class="app-panel" data-panel="membros">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Ranking de membros</h3>
+            <p>Ordenado por nível/XP — quem mais estuda e ajuda a comunidade sobe no ranking.</p>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Membro</th><th>Perfil</th><th>Cursos</th><th>Nível</th><th>XP</th></tr></thead>
+          <tbody id="membersBody"></tbody>
+        </table>
+        <p class="form-note" style="margin-top:14px;">A lista de membros é ilustrativa (não há contas reais ainda). A linha "Você" reflete o progresso real deste navegador — cursos assistidos e participação na Central de Dúvidas.</p>
+      </div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section class="app-panel" data-panel="configuracoes">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Conteúdo da página inicial</h3>
+          </div>
+        </div>
+        <form class="app-form" id="settingsForm">
+          <div class="full">
+            <label>Título principal (hero)</label>
+            <input type="text" id="setHeroTitle">
+          </div>
+          <div class="full">
+            <label>Subtítulo (hero)</label>
+            <textarea id="setHeroSubtitle" rows="2"></textarea>
+          </div>
+          <div>
+            <label>Número de WhatsApp (só números, com DDI)</label>
+            <input type="text" id="setWhatsapp" placeholder="5511999999999">
+          </div>
+          <div>
+            <label>Instagram</label>
+            <input type="text" id="setInstagram" placeholder="@clubedointensivista">
+          </div>
+          <div>
+            <label>E-mail de contato</label>
+            <input type="email" id="setEmail">
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-primary">Salvar configurações</button>
+          </div>
+        </form>
+        <p class="form-note" style="margin-top:14px;">Estas configurações ficam salvas neste navegador para fins de demonstração. Na versão em produção, elas serão aplicadas automaticamente em todas as páginas do site.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data-store.js"></script>
+<script>
+(function () {
+  var data = CIStore.load();
+  var activeCourseId = data.courses[0] ? data.courses[0].id : null;
+
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); }, 1800);
+  }
+
+  function persist() { CIStore.save(data); }
+
+  function formatDate(iso) {
+    var d = new Date(iso + 'T12:00:00');
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function renderStats() {
+    var totalLessons = data.courses.reduce(function (sum, c) { return sum + c.lessons.length; }, 0);
+    var stats = [
+      { label: 'Próximos eventos', value: data.events.length },
+      { label: 'Cursos ativos', value: data.courses.length },
+      { label: 'Aulas cadastradas', value: totalLessons },
+      { label: 'Materiais na biblioteca', value: data.materials.length }
+    ];
+    document.getElementById('adminStats').innerHTML = stats.map(function (s) {
+      return '<div class="app-stat"><strong>' + s.value + '</strong><span>' + s.label + '</span></div>';
+    }).join('');
+  }
+
+  function renderEvents() {
+    var sorted = data.events.slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+    var body = document.getElementById('eventsBody');
+    if (!sorted.length) { body.innerHTML = '<tr><td colspan="4"><div class="empty-state">Nenhum evento cadastrado.</div></td></tr>'; return; }
+    body.innerHTML = sorted.map(function (ev) {
+      return '<tr><td>' + formatDate(ev.date) + '</td><td>' + ev.title + '</td><td><span class="table-tag">' + ev.type + '</span></td>' +
+        '<td style="text-align:right;"><button class="btn-danger" data-del-event="' + ev.id + '">Remover</button></td></tr>';
+    }).join('');
+  }
+
+  function renderCourseChips() {
+    document.getElementById('adminCourseChips').innerHTML = data.courses.map(function (c) {
+      return '<button data-course="' + c.id + '" class="' + (c.id === activeCourseId ? 'active' : '') + '">' + c.title + (c.externalLink ? ' · link externo' : '') + '</button>';
+    }).join('') || '<div class="empty-state">Nenhum curso cadastrado ainda.</div>';
+    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    document.getElementById('adminSelectedCourseLabel').textContent = course ? 'Adicionando aula em: ' + course.title : 'Crie ou selecione um curso acima';
+  }
+
+  function renderLessons() {
+    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    var body = document.getElementById('lessonsBody');
+    if (!course || !course.lessons.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">Nenhuma aula cadastrada para este curso ainda.</div></td></tr>'; return; }
+    body.innerHTML = course.lessons.map(function (l) {
+      return '<tr><td>' + l.title + '</td><td>' + l.duration + '</td>' +
+        '<td style="text-align:right;"><button class="btn-danger" data-del-lesson="' + l.id + '">Remover</button></td></tr>';
+    }).join('');
+  }
+
+  function renderMaterials() {
+    var body = document.getElementById('materialsBody');
+    if (!data.materials.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">Nenhum material cadastrado.</div></td></tr>'; return; }
+    body.innerHTML = data.materials.map(function (m) {
+      return '<tr><td>' + m.title + '</td><td><span class="table-tag">' + m.type + '</span></td>' +
+        '<td style="text-align:right;"><button class="btn-danger" data-del-material="' + m.id + '">Remover</button></td></tr>';
+    }).join('');
+  }
+
+  function renderAnnouncements() {
+    var sorted = data.announcements.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    var body = document.getElementById('announcementsBody');
+    if (!sorted.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">Nenhum comunicado publicado ainda.</div></td></tr>'; return; }
+    body.innerHTML = sorted.map(function (a) {
+      return '<tr><td>' + formatDate(a.date) + '</td><td>' + a.text + '</td>' +
+        '<td style="text-align:right;"><button class="btn-danger" data-del-announcement="' + a.id + '">Remover</button></td></tr>';
+    }).join('');
+  }
+
+  function renderMembers() {
+    var my = CIStore.computeMyStats(data);
+    var myLevel = CIStore.levelForXp(my.xp);
+    var rows = data.members.map(function (m) {
+      var level = CIStore.levelForXp(m.xp);
+      return { name: m.name, profession: m.profession, courses: m.courses, xp: m.xp, title: level.title, isMe: false };
+    });
+    rows.push({ name: 'Você', profession: 'Sua conta neste navegador', courses: data.courses.length, xp: my.xp, title: myLevel.title, isMe: true });
+    rows.sort(function (a, b) { return b.xp - a.xp; });
+
+    document.getElementById('membersBody').innerHTML = rows.map(function (r, i) {
+      var style = r.isMe ? ' style="background:rgba(151,221,171,.12);font-weight:700;"' : '';
+      return '<tr' + style + '><td>' + (i + 1) + '</td><td>' + r.name + (r.isMe ? ' <span class="table-tag">Você</span>' : '') + '</td><td>' + r.profession + '</td><td>' + r.courses + '</td><td>' + r.title + '</td><td>' + r.xp + '</td></tr>';
+    }).join('');
+  }
+
+  function fillSettingsForm() {
+    document.getElementById('setHeroTitle').value = data.settings.heroTitle;
+    document.getElementById('setHeroSubtitle').value = data.settings.heroSubtitle;
+    document.getElementById('setWhatsapp').value = data.settings.whatsapp;
+    document.getElementById('setInstagram').value = data.settings.instagram;
+    document.getElementById('setEmail').value = data.settings.email;
+  }
+
+  function renderAll() {
+    renderStats();
+    renderEvents();
+    renderCourseChips();
+    renderLessons();
+    renderMaterials();
+    renderAnnouncements();
+    renderMembers();
+  }
+
+  // Nav
+  document.getElementById('adminNav').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-panel]');
+    if (!btn) return;
+    document.querySelectorAll('#adminNav button').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var panel = btn.getAttribute('data-panel');
+    document.querySelectorAll('.app-panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === panel); });
+    document.getElementById('adminTitle').textContent = btn.textContent.trim();
+    if (panel === 'membros') renderMembers();
+  });
+
+  // Course chips
+  document.getElementById('adminCourseChips').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-course]');
+    if (!btn) return;
+    activeCourseId = btn.getAttribute('data-course');
+    renderCourseChips();
+    renderLessons();
+  });
+
+  // Create course
+  document.getElementById('courseForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = document.getElementById('courseTitle').value.trim();
+    var modality = document.getElementById('courseModality').value;
+    var workload = document.getElementById('courseWorkload').value.trim();
+    var description = document.getElementById('courseDescription').value.trim();
+    var externalPrice = document.getElementById('courseExternalPrice').value.trim();
+    var externalLink = document.getElementById('courseExternalLink').value.trim();
+    if (!title) return;
+    var course = {
+      id: CIStore.uid('course'), title: title, modality: modality, workload: workload, description: description,
+      externalPrice: externalPrice, externalLink: externalLink, lessons: []
+    };
+    data.courses.push(course);
+    activeCourseId = course.id;
+    persist();
+    renderCourseChips();
+    renderLessons();
+    renderStats();
+    e.target.reset();
+    toast('Curso criado — já disponível na página pública de Cursos');
+  });
+
+  document.getElementById('deleteCourseBtn').addEventListener('click', function () {
+    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    if (!course) return;
+    if (!confirm('Remover o curso "' + course.title + '" e todas as suas aulas?')) return;
+    data.courses = data.courses.filter(function (c) { return c.id !== activeCourseId; });
+    activeCourseId = data.courses[0] ? data.courses[0].id : null;
+    persist();
+    renderCourseChips();
+    renderLessons();
+    renderStats();
+    toast('Curso removido');
+  });
+
+  // Event form
+  document.getElementById('eventForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = document.getElementById('evTitle').value.trim();
+    var date = document.getElementById('evDate').value;
+    var type = document.getElementById('evType').value;
+    var externalLink = document.getElementById('evExternalLink').value.trim();
+    if (!title || !date) return;
+    data.events.push({ id: CIStore.uid('ev'), title: title, date: date, type: type, externalLink: externalLink });
+    persist();
+    renderEvents();
+    renderStats();
+    e.target.reset();
+    toast('Evento adicionado');
+  });
+
+  document.getElementById('eventsBody').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-del-event]');
+    if (!btn) return;
+    var id = btn.getAttribute('data-del-event');
+    data.events = data.events.filter(function (ev) { return ev.id !== id; });
+    persist();
+    renderEvents();
+    renderStats();
+    toast('Evento removido');
+  });
+
+  // Lesson form
+  document.getElementById('lessonForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    if (!course) return;
+    var title = document.getElementById('lessonTitle').value.trim();
+    var duration = document.getElementById('lessonDuration').value.trim();
+    if (!title || !duration) return;
+    course.lessons.push({ id: CIStore.uid('l'), title: title, duration: duration });
+    persist();
+    renderLessons();
+    renderStats();
+    e.target.reset();
+    toast('Aula adicionada ao curso');
+  });
+
+  document.getElementById('lessonsBody').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-del-lesson]');
+    if (!btn) return;
+    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    if (!course) return;
+    var id = btn.getAttribute('data-del-lesson');
+    course.lessons = course.lessons.filter(function (l) { return l.id !== id; });
+    persist();
+    renderLessons();
+    renderStats();
+    toast('Aula removida');
+  });
+
+  // Material form
+  document.getElementById('materialForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = document.getElementById('matTitle').value.trim();
+    var type = document.getElementById('matType').value;
+    if (!title) return;
+    data.materials.push({ id: CIStore.uid('mat'), title: title, type: type, free: true });
+    persist();
+    renderMaterials();
+    renderStats();
+    e.target.reset();
+    toast('Material adicionado — já disponível na página pública de Materiais');
+  });
+
+  document.getElementById('materialsBody').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-del-material]');
+    if (!btn) return;
+    var id = btn.getAttribute('data-del-material');
+    data.materials = data.materials.filter(function (m) { return m.id !== id; });
+    persist();
+    renderMaterials();
+    renderStats();
+    toast('Material removido');
+  });
+
+  // Announcement form
+  document.getElementById('announcementForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = document.getElementById('anText').value.trim();
+    if (!text) return;
+    var today = new Date().toISOString().slice(0, 10);
+    data.announcements.push({ id: CIStore.uid('an'), date: today, text: text });
+    persist();
+    renderAnnouncements();
+    e.target.reset();
+    toast('Comunicado publicado na Área do aluno');
+  });
+
+  document.getElementById('announcementsBody').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-del-announcement]');
+    if (!btn) return;
+    var id = btn.getAttribute('data-del-announcement');
+    data.announcements = data.announcements.filter(function (a) { return a.id !== id; });
+    persist();
+    renderAnnouncements();
+    toast('Comunicado removido');
+  });
+
+  // Settings form
+  document.getElementById('settingsForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    data.settings.heroTitle = document.getElementById('setHeroTitle').value;
+    data.settings.heroSubtitle = document.getElementById('setHeroSubtitle').value;
+    data.settings.whatsapp = document.getElementById('setWhatsapp').value;
+    data.settings.instagram = document.getElementById('setInstagram').value;
+    data.settings.email = document.getElementById('setEmail').value;
+    persist();
+    toast('Configurações salvas');
+  });
+
+  document.getElementById('resetDataBtn').addEventListener('click', function () {
+    if (!confirm('Restaurar todos os dados de exemplo? Isso apaga eventos, cursos, aulas, materiais e comunicados adicionados neste navegador.')) return;
+    data = CIStore.reset();
+    activeCourseId = data.courses[0] ? data.courses[0].id : null;
+    fillSettingsForm();
+    renderAll();
+    toast('Dados restaurados');
+  });
+
+  fillSettingsForm();
+  renderAll();
+})();
+</script>
+</body>
+</html>

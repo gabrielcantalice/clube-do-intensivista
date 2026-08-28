@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minha Área | Clube do Intensivista</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="brand-mini">
+      <img src="assets/logo-white.svg" class="logo-mark" alt="Clube do Intensivista">
+      Clube do Intensivista
+    </div>
+    <span class="app-role-tag">Área do aluno</span>
+
+    <nav class="app-nav" id="alunoNav">
+      <button data-panel="visao" class="active">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Visão geral
+      </button>
+      <button data-panel="cursos">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6.5 12 3l9 3.5-9 3.5-9-3.5Z"/><path d="M7 9.5V16c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V9.5"/></svg>
+        Meus cursos
+      </button>
+      <button data-panel="duvidas">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20l1.2-3.6A8 8 0 1 1 8.6 19L4 20Z"/><path d="M9 10.2h.01M12 10.2h.01M15 10.2h.01"/></svg>
+        Central de dúvidas
+      </button>
+      <button data-panel="materiais">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4.5h11l3 3V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
+        Materiais
+      </button>
+      <button data-panel="certificados">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.5 5 2.5-1.5-7.5"/></svg>
+        Certificados
+      </button>
+      <button data-panel="comunicados">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5h16v11H8l-4 3.5v-3.5H4Z"/></svg>
+        Comunicados
+      </button>
+    </nav>
+
+    <div class="app-sidebar-foot">
+      <a href="index.html">&larr; Voltar ao site</a>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <h1>Bem-vindo(a) de volta</h1>
+        <p>Acompanhe seus cursos, sua evolução e a comunidade do Clube.</p>
+      </div>
+    </div>
+
+    <!-- VISÃO GERAL -->
+    <section class="app-panel active" data-panel="visao">
+      <div class="level-card">
+        <div class="level-badge" id="levelBadgeNumber">1</div>
+        <div class="level-info">
+          <div class="level-title" id="levelTitle">Aluno(a) Iniciante</div>
+          <div class="level-sub" id="levelSub">Continue estudando e participando para subir de nível.</div>
+          <div class="level-track"><span id="levelTrackBar" style="width:0%;"></span></div>
+          <div class="level-xp-label" id="levelXpLabel">0 XP</div>
+        </div>
+      </div>
+
+      <div class="app-stats" id="alunoStats"></div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Conquistas</h3>
+            <p>Desbloqueadas ao estudar e participar da comunidade.</p>
+          </div>
+        </div>
+        <div class="achv-grid" id="achvGrid"></div>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Continue de onde parou</h3>
+            <p>Seu progresso nos cursos em andamento.</p>
+          </div>
+        </div>
+        <div id="alunoProgressList"></div>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Últimos comunicados</h3>
+          </div>
+        </div>
+        <div id="alunoAnnouncementsPreview"></div>
+      </div>
+    </section>
+
+    <!-- MEUS CURSOS -->
+    <section class="app-panel" data-panel="cursos">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Meus cursos</h3>
+            <p>Marque as aulas assistidas para acompanhar seu progresso e ganhar XP.</p>
+          </div>
+        </div>
+        <div class="course-select-chip" id="alunoCourseChips"></div>
+        <div class="progress-track" style="margin-bottom:18px;"><span id="alunoCourseProgressBar" style="width:0%;"></span></div>
+        <div id="alunoLessonsList"></div>
+      </div>
+    </section>
+
+    <!-- CENTRAL DE DÚVIDAS -->
+    <section class="app-panel" data-panel="duvidas">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Publicar uma dúvida</h3>
+            <p>Descreva a situação que está acontecendo agora — colegas online podem responder na hora.</p>
+          </div>
+        </div>
+        <form class="app-form" id="questionForm">
+          <div class="full">
+            <label>Seu nome de exibição</label>
+            <input type="text" id="questionAuthor" placeholder="Como quer aparecer para os colegas">
+          </div>
+          <div>
+            <label>Área clínica</label>
+            <select id="questionTag">
+              <option>Ventilação Mecânica</option>
+              <option>Hemodinâmica</option>
+              <option>Gasometria</option>
+              <option>Emergência</option>
+              <option>Fisioterapia Motora</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div></div>
+          <div class="full">
+            <label>O que está acontecendo</label>
+            <textarea id="questionBody" rows="3" placeholder="Ex: paciente em VM com PEEP 12, dessaturando após aspiração. Como conduzir?" required></textarea>
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-primary">Publicar dúvida</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-card">
+        <div class="forum-toolbar">
+          <div>
+            <h3 style="margin:0 0 2px;">Dúvidas da comunidade</h3>
+            <p style="margin:0;font-size:.82rem;">Respostas valem XP e ajudam colegas em tempo real.</p>
+          </div>
+          <div class="sync-note"><span class="sync-dot"></span> Sincronizado entre abas abertas neste navegador</div>
+        </div>
+        <div id="forumList"></div>
+      </div>
+    </section>
+
+    <!-- MATERIAIS -->
+    <section class="app-panel" data-panel="materiais">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Materiais liberados</h3>
+            <p>Biblioteca do Intensivista disponível para sua conta.</p>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Material</th><th>Tipo</th><th></th></tr></thead>
+          <tbody id="alunoMaterialsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CERTIFICADOS -->
+    <section class="app-panel" data-panel="certificados">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Certificados</h3>
+            <p>Disponíveis ao concluir 100% das aulas de um curso.</p>
+          </div>
+        </div>
+        <div id="alunoCertList" style="display:grid;gap:14px;"></div>
+      </div>
+    </section>
+
+    <!-- COMUNICADOS -->
+    <section class="app-panel" data-panel="comunicados">
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Comunicados do Clube</h3>
+          </div>
+        </div>
+        <div id="alunoAnnouncementsFull"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/data-store.js"></script>
+<script>
+(function () {
+  var data = CIStore.load();
+  var progress = CIStore.loadProgress();
+  var enrolledIds = data.courses.map(function (c) { return c.id; });
+  var activeCourseId = enrolledIds[0];
+
+  var FORUM_KEY = 'ci_forum_v1';
+  var NAME_KEY = 'ci_display_name_v1';
+  var expandedThreads = {};
+
+  var LEVELS = [
+    { min: 0, title: 'Aluno(a) Iniciante' },
+    { min: 100, title: 'Aluno(a) Dedicado(a)' },
+    { min: 250, title: 'Praticante Clínico(a)' },
+    { min: 500, title: 'Intensivista em Formação' },
+    { min: 1000, title: 'Referência da Turma' },
+    { min: 2000, title: 'Mentor(a) do Clube' }
+  ];
+
+  var ACHIEVEMENTS = [
+    { id: 'primeiro-passo', title: 'Primeiro Passo', desc: 'Assistiu à primeira aula do Clube.', check: function (s) { return s.watched >= 1; } },
+    { id: 'estudo-constante', title: 'Estudo Constante', desc: 'Assistiu a 10 aulas.', check: function (s) { return s.watched >= 10; } },
+    { id: 'curso-concluido', title: 'Curso Concluído', desc: 'Completou 100% de um curso.', check: function (s) { return s.completedCourses >= 1; } },
+    { id: 'voz-ativa', title: 'Voz Ativa', desc: 'Publicou 3 dúvidas na comunidade.', check: function (s) { return s.myQuestions >= 3; } },
+    { id: 'colaborador', title: 'Colaborador(a)', desc: 'Respondeu 5 dúvidas de colegas.', check: function (s) { return s.myAnswers >= 5; } },
+    { id: 'referencia', title: 'Referência da Turma', desc: 'Alcançou o nível 4.', check: function (s) { return s.levelIndex >= 3; } }
+  ];
+
+  var ACHV_ICONS = {
+    'primeiro-passo': '<circle cx="12" cy="12" r="9"/><path d="M8.5 12.3l2.3 2.3 4.7-5"/>',
+    'estudo-constante': '<path d="M4.5 6.5h9l3 3v8h-12z"/><path d="M8 10.5h5M8 13.5h5"/>',
+    'curso-concluido': '<path d="M3 6.5 12 3l9 3.5-9 3.5-9-3.5Z"/><path d="M7 9.5V16c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5V9.5"/>',
+    'voz-ativa': '<path d="M4 19l1-3.2A7.5 7.5 0 1 1 8 18.5L4 19Z"/>',
+    'colaborador': '<circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M14.5 14.5c2.4.3 4 2.1 4 4.5"/>',
+    'referencia': '<path d="M4 18l4-8 3 4 3-6 6 10"/>'
+  };
+
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function () { el.classList.remove('show'); }, 1900);
+  }
+
+  function courseProgress(course) {
+    var total = course.lessons.length;
+    if (!total) return 0;
+    var done = course.lessons.filter(function (l) { return progress[l.id]; }).length;
+    return Math.round((done / total) * 100);
+  }
+
+  /* ---------- Forum store ---------- */
+  function seedForum() {
+    var now = Date.now();
+    return [
+      {
+        id: 'th-1', authorIsMe: false, author: 'Rodrigo S.', tag: 'Ventilação Mecânica',
+        body: 'Paciente em VM, PEEP 12, dessaturando bruscamente após aspiração. Já reconectei e aumentei FiO2 a 100%. Alguma sugestão de próximo passo antes de acionar a equipe médica?',
+        createdAt: now - 6 * 60 * 1000,
+        answers: [
+          { id: 'a-1', authorIsMe: false, author: 'Camila M.', body: 'Verifica se não é desrecrutamento — considera manobra de recrutamento rápida e checa se o circuito está bem vedado antes de mais nada.', createdAt: now - 3 * 60 * 1000 }
+        ]
+      },
+      {
+        id: 'th-2', authorIsMe: false, author: 'Juliana T.', tag: 'Hemodinâmica',
+        body: 'Paciente séptico, PAM 58 mesmo após 30ml/kg de cristaloide. Já é hora de iniciar noradrenalina ou vale mais uma prova de fluido?',
+        createdAt: now - 40 * 60 * 1000,
+        answers: []
+      },
+      {
+        id: 'th-3', authorIsMe: false, author: 'Rodrigo S.', tag: 'Fisioterapia Motora',
+        body: 'Alguém tem um protocolo de mobilização precoce validado para paciente em VM há 3 dias, hemodinamicamente estável?',
+        createdAt: now - 3 * 60 * 60 * 1000,
+        answers: [
+          { id: 'a-2', authorIsMe: false, author: 'Camila M.', body: 'A gente usa a escala de Perme como critério de elegibilidade antes de progredir a mobilização — funciona bem.', createdAt: now - 2 * 60 * 60 * 1000 },
+          { id: 'a-3', authorIsMe: false, author: 'Juliana T.', body: 'Também vale checar estabilidade de PAM e FiO2 <= 60% antes de sair da cama.', createdAt: now - 90 * 60 * 1000 }
+        ]
+      }
+    ];
+  }
+
+  function loadForum() {
+    try {
+      var raw = localStorage.getItem(FORUM_KEY);
+      if (!raw) { var seeded = seedForum(); localStorage.setItem(FORUM_KEY, JSON.stringify(seeded)); return seeded; }
+      return JSON.parse(raw);
+    } catch (e) { return seedForum(); }
+  }
+
+  function saveForum(threads) {
+    localStorage.setItem(FORUM_KEY, JSON.stringify(threads));
+  }
+
+  function getDisplayName() {
+    return localStorage.getItem(NAME_KEY) || '';
+  }
+
+  var forum = loadForum();
+
+  /* ---------- Gamification ---------- */
+  function computeGamStats() {
+    var watched = 0;
+    data.courses.forEach(function (c) { c.lessons.forEach(function (l) { if (progress[l.id]) watched++; }); });
+    var completedCourses = data.courses.filter(function (c) { return courseProgress(c) === 100; }).length;
+    var myQuestions = forum.filter(function (t) { return t.authorIsMe; }).length;
+    var myAnswers = 0;
+    forum.forEach(function (t) { t.answers.forEach(function (a) { if (a.authorIsMe) myAnswers++; }); });
+
+    var xp = watched * 10 + completedCourses * 50 + myQuestions * 5 + myAnswers * 20;
+
+    var levelIndex = 0;
+    for (var i = 0; i < LEVELS.length; i++) { if (xp >= LEVELS[i].min) levelIndex = i; }
+
+    return { watched: watched, completedCourses: completedCourses, myQuestions: myQuestions, myAnswers: myAnswers, xp: xp, levelIndex: levelIndex };
+  }
+
+  function renderLevel() {
+    var s = computeGamStats();
+    var current = LEVELS[s.levelIndex];
+    var next = LEVELS[s.levelIndex + 1];
+    document.getElementById('levelBadgeNumber').textContent = (s.levelIndex + 1);
+    document.getElementById('levelTitle').textContent = current.title;
+    document.getElementById('levelXpLabel').textContent = next
+      ? (s.xp - current.min) + ' / ' + (next.min - current.min) + ' XP para "' + next.title + '"'
+      : s.xp + ' XP · nível máximo alcançado';
+    document.getElementById('levelSub').textContent = next
+      ? 'Assista aulas e responda dúvidas da comunidade para evoluir.'
+      : 'Você atingiu o nível máximo do Clube. Continue ajudando a comunidade.';
+    var pct = next ? Math.round(((s.xp - current.min) / (next.min - current.min)) * 100) : 100;
+    document.getElementById('levelTrackBar').style.width = pct + '%';
+    return s;
+  }
+
+  function renderAchievements(s) {
+    document.getElementById('achvGrid').innerHTML = ACHIEVEMENTS.map(function (a) {
+      var unlocked = a.check(s);
+      return '<div class="achv-card' + (unlocked ? '' : ' locked') + '">' +
+        '<div class="achv-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">' + ACHV_ICONS[a.id] + '</svg></div>' +
+        '<div><h4>' + a.title + '</h4><p>' + a.desc + '</p></div>' +
+        '</div>';
+    }).join('');
+  }
+
+  /* ---------- Existing panels ---------- */
+  function renderStats() {
+    var totalLessons = 0, doneLessons = 0;
+    data.courses.forEach(function (c) {
+      totalLessons += c.lessons.length;
+      c.lessons.forEach(function (l) { if (progress[l.id]) doneLessons++; });
+    });
+    var certs = data.courses.filter(function (c) { return courseProgress(c) === 100; }).length;
+    var stats = [
+      { label: 'Cursos matriculados', value: data.courses.length },
+      { label: 'Aulas concluídas', value: doneLessons + '/' + totalLessons },
+      { label: 'Certificados conquistados', value: certs },
+      { label: 'Materiais disponíveis', value: data.materials.length }
+    ];
+    document.getElementById('alunoStats').innerHTML = stats.map(function (s) {
+      return '<div class="app-stat"><strong>' + s.value + '</strong><span>' + s.label + '</span></div>';
+    }).join('');
+  }
+
+  function renderProgressList() {
+    document.getElementById('alunoProgressList').innerHTML = data.courses.map(function (c) {
+      var pct = courseProgress(c);
+      return '<div style="margin-bottom:16px;">' +
+        '<div style="display:flex;justify-content:space-between;font-size:.88rem;font-weight:600;margin-bottom:6px;"><span>' + c.title + '</span><span>' + pct + '%</span></div>' +
+        '<div class="progress-track"><span style="width:' + pct + '%;"></span></div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderAnnouncements(targetId, limit) {
+    var list = data.announcements.slice().sort(function (a, b) { return b.date.localeCompare(a.date); });
+    if (limit) list = list.slice(0, limit);
+    var el = document.getElementById(targetId);
+    if (!list.length) { el.innerHTML = '<div class="empty-state">Nenhum comunicado no momento.</div>'; return; }
+    el.innerHTML = list.map(function (a) {
+      return '<div class="announcement-item"><time>' + formatDate(a.date) + '</time><p>' + a.text + '</p></div>';
+    }).join('');
+  }
+
+  function formatDate(iso) {
+    var d = new Date(iso + 'T12:00:00');
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function timeAgo(ts) {
+    var diff = Math.max(0, Date.now() - ts);
+    var min = Math.round(diff / 60000);
+    if (min < 1) return 'agora mesmo';
+    if (min < 60) return 'há ' + min + ' min';
+    var hr = Math.round(min / 60);
+    if (hr < 24) return 'há ' + hr + 'h';
+    var day = Math.round(hr / 24);
+    return 'há ' + day + (day === 1 ? ' dia' : ' dias');
+  }
+
+  function renderCourseChips() {
+    document.getElementById('alunoCourseChips').innerHTML = data.courses.map(function (c) {
+      return '<button data-course="' + c.id + '" class="' + (c.id === activeCourseId ? 'active' : '') + '">' + c.title + '</button>';
+    }).join('');
+  }
+
+  function renderLessons() {
+    var course = data.courses.find(function (c) { return c.id === activeCourseId; });
+    if (!course) return;
+    document.getElementById('alunoCourseProgressBar').style.width = courseProgress(course) + '%';
+    document.getElementById('alunoLessonsList').innerHTML = course.lessons.map(function (l) {
+      var watched = !!progress[l.id];
+      return '<div class="lesson-row' + (watched ? ' watched' : '') + '">' +
+        '<input type="checkbox" class="lesson-check" data-lesson="' + l.id + '" ' + (watched ? 'checked' : '') + '>' +
+        '<div class="lesson-title">' + l.title + '<small>' + l.duration + '</small></div>' +
+        '</div>';
+    }).join('') || '<div class="empty-state">Nenhuma aula cadastrada ainda para este curso.</div>';
+  }
+
+  function renderMaterials() {
+    document.getElementById('alunoMaterialsBody').innerHTML = data.materials.map(function (m) {
+      return '<tr><td>' + m.title + '</td><td><span class="table-tag">' + m.type + '</span></td>' +
+        '<td style="text-align:right;"><a href="#" class="btn btn-outline btn-sm" onclick="return false;">Baixar</a></td></tr>';
+    }).join('');
+  }
+
+  function renderCertificates() {
+    var el = document.getElementById('alunoCertList');
+    var earned = data.courses.filter(function (c) { return courseProgress(c) === 100; });
+    var pending = data.courses.filter(function (c) { return courseProgress(c) < 100; });
+    var html = '';
+    earned.forEach(function (c) {
+      html += '<div class="cert-card"><div><h4>' + c.title + '</h4><p>Certificado disponível para download.</p></div><a href="#" class="btn btn-primary btn-sm" onclick="return false;">Baixar certificado</a></div>';
+    });
+    pending.forEach(function (c) {
+      html += '<div class="app-card" style="margin-bottom:0;"><div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;"><div><h4 style="margin:0 0 4px;">' + c.title + '</h4><p style="margin:0;font-size:.85rem;color:var(--ink-soft);">Conclua todas as aulas para liberar o certificado (' + courseProgress(c) + '% concluído).</p></div></div></div>';
+    });
+    el.innerHTML = html || '<div class="empty-state">Complete um curso para ver seu certificado aqui.</div>';
+  }
+
+  /* ---------- Forum rendering ---------- */
+  function renderForum() {
+    var sorted = forum.slice().sort(function (a, b) { return b.createdAt - a.createdAt; });
+    var el = document.getElementById('forumList');
+    if (!sorted.length) { el.innerHTML = '<div class="empty-state">Nenhuma dúvida publicada ainda. Seja o primeiro a perguntar.</div>'; return; }
+
+    el.innerHTML = sorted.map(function (t) {
+      var answered = t.answers.length > 0;
+      var expanded = !!expandedThreads[t.id];
+      var answersHtml = t.answers.slice().sort(function (a, b) { return a.createdAt - b.createdAt; }).map(function (a) {
+        return '<div class="answer-item"><div class="thread-meta"><strong>' + escapeHtml(a.author) + '</strong><span>' + timeAgo(a.createdAt) + '</span></div><p>' + escapeHtml(a.body) + '</p></div>';
+      }).join('');
+
+      return '<div class="forum-thread' + (answered ? '' : ' is-open') + '" data-thread="' + t.id + '">' +
+        '<div class="thread-head">' +
+          '<div class="thread-meta"><strong>' + escapeHtml(t.author) + '</strong><span class="table-tag">' + escapeHtml(t.tag) + '</span><span>' + timeAgo(t.createdAt) + '</span></div>' +
+          '<span class="status-pill ' + (answered ? 'answered' : 'open') + '">' + (answered ? 'Respondida' : 'Aberta') + '</span>' +
+        '</div>' +
+        '<p class="thread-body">' + escapeHtml(t.body) + '</p>' +
+        '<button type="button" class="thread-toggle" data-toggle="' + t.id + '">' + (t.answers.length) + (t.answers.length === 1 ? ' resposta' : ' respostas') + (expanded ? ' — ocultar' : ' — ver e responder') + '</button>' +
+        '<div class="thread-answers' + (expanded ? ' expanded' : '') + '">' +
+          (answersHtml || '<div class="empty-state" style="padding:14px 0;">Ainda sem respostas — seja o primeiro a ajudar.</div>') +
+          '<div class="reply-row">' +
+            '<textarea placeholder="Escreva sua resposta..." data-reply="' + t.id + '"></textarea>' +
+            '<button type="button" class="btn btn-primary btn-sm" data-send="' + t.id + '" style="align-self:flex-end;">Responder</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function renderAll() {
+    var s = renderLevel();
+    renderAchievements(s);
+    renderStats();
+    renderProgressList();
+    renderAnnouncements('alunoAnnouncementsPreview', 2);
+    renderAnnouncements('alunoAnnouncementsFull');
+    renderCourseChips();
+    renderLessons();
+    renderMaterials();
+    renderCertificates();
+    renderForum();
+  }
+
+  /* ---------- Events ---------- */
+  document.getElementById('alunoNav').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-panel]');
+    if (!btn) return;
+    document.querySelectorAll('#alunoNav button').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.app-panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === btn.getAttribute('data-panel')); });
+  });
+
+  document.getElementById('alunoCourseChips').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-course]');
+    if (!btn) return;
+    activeCourseId = btn.getAttribute('data-course');
+    renderCourseChips();
+    renderLessons();
+  });
+
+  document.getElementById('alunoLessonsList').addEventListener('change', function (e) {
+    var box = e.target.closest('.lesson-check');
+    if (!box) return;
+    var id = box.getAttribute('data-lesson');
+    progress[id] = box.checked;
+    CIStore.saveProgress(progress);
+    renderLessons();
+    renderStats();
+    renderProgressList();
+    renderCertificates();
+    var s = renderLevel();
+    renderAchievements(s);
+    if (box.checked) toast('Aula concluída · +10 XP');
+  });
+
+  document.getElementById('questionAuthor').value = getDisplayName();
+
+  document.getElementById('questionForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var author = document.getElementById('questionAuthor').value.trim() || 'Você';
+    var tag = document.getElementById('questionTag').value;
+    var body = document.getElementById('questionBody').value.trim();
+    if (!body) return;
+    localStorage.setItem(NAME_KEY, author);
+    forum.push({ id: CIStore.uid('th'), authorIsMe: true, author: author, tag: tag, body: body, createdAt: Date.now(), answers: [] });
+    saveForum(forum);
+    renderForum();
+    var s = renderLevel();
+    renderAchievements(s);
+    e.target.reset();
+    document.getElementById('questionAuthor').value = author;
+    toast('Dúvida publicada · +5 XP');
+  });
+
+  document.getElementById('forumList').addEventListener('click', function (e) {
+    var toggleBtn = e.target.closest('[data-toggle]');
+    if (toggleBtn) {
+      var tid = toggleBtn.getAttribute('data-toggle');
+      expandedThreads[tid] = !expandedThreads[tid];
+      renderForum();
+      return;
+    }
+    var sendBtn = e.target.closest('[data-send]');
+    if (sendBtn) {
+      var threadId = sendBtn.getAttribute('data-send');
+      var textarea = document.querySelector('textarea[data-reply="' + threadId + '"]');
+      var body = textarea.value.trim();
+      if (!body) return;
+      var author = getDisplayName() || document.getElementById('questionAuthor').value.trim() || 'Você';
+      var thread = forum.find(function (t) { return t.id === threadId; });
+      if (!thread) return;
+      thread.answers.push({ id: CIStore.uid('a'), authorIsMe: true, author: author, body: body, createdAt: Date.now() });
+      saveForum(forum);
+      expandedThreads[threadId] = true;
+      renderForum();
+      var s = renderLevel();
+      renderAchievements(s);
+      toast('Resposta publicada · +20 XP');
+    }
+  });
+
+  // Cross-tab sync: if another tab (e.g. a colleague on the same computer) posts or
+  // answers a question, this tab reflects it immediately via the native storage event.
+  window.addEventListener('storage', function (e) {
+    if (e.key === FORUM_KEY) {
+      forum = loadForum();
+      renderForum();
+      var s = renderLevel();
+      renderAchievements(s);
+    }
+  });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
