@@ -312,15 +312,67 @@
       <div class="app-card">
         <div class="app-card-head">
           <div>
-            <h3>Ranking de membros</h3>
-            <p>Ordenado por nível/XP — quem mais estuda e ajuda a comunidade sobe no ranking.</p>
+            <h3>Adicionar membro</h3>
+            <p>A pessoa recebe um e-mail para criar a própria senha e acessar a conta.</p>
+          </div>
+        </div>
+        <form class="app-form" id="inviteForm">
+          <div>
+            <label>Nome completo</label>
+            <input type="text" id="inviteName" placeholder="Nome da pessoa" required>
+          </div>
+          <div>
+            <label>E-mail</label>
+            <input type="email" id="inviteEmail" required>
+          </div>
+          <div>
+            <label>Profissão</label>
+            <select id="inviteProfession">
+              <option>Fisioterapia</option>
+              <option>Enfermagem</option>
+              <option>Medicina</option>
+              <option>Estudante</option>
+              <option>Outra</option>
+            </select>
+          </div>
+          <div>
+            <label>Papel no sistema</label>
+            <select id="inviteRole">
+              <option value="aluno">Aluno</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <div class="full">
+            <button type="submit" class="btn btn-primary" id="inviteSubmit">Enviar convite</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Membros cadastrados</h3>
+            <p>Direto da base de contas do Clube (Supabase).</p>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Profissão</th><th>Papel</th><th>Desde</th><th></th></tr></thead>
+          <tbody id="realMembersBody"></tbody>
+        </table>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-head">
+          <div>
+            <h3>Ranking (demonstração)</h3>
+            <p>Ordenado por nível/XP. Ainda usa dados de exemplo — o ranking com XP real de todos os membros entra quando migrarmos o progresso para o banco de dados.</p>
           </div>
         </div>
         <table class="data-table">
           <thead><tr><th>#</th><th>Membro</th><th>Perfil</th><th>Cursos</th><th>Nível</th><th>XP</th></tr></thead>
           <tbody id="membersBody"></tbody>
         </table>
-        <p class="form-note" style="margin-top:14px;">A lista de membros é ilustrativa (não há contas reais ainda). A linha "Você" reflete o progresso real deste navegador — cursos assistidos e participação na Central de Dúvidas.</p>
+        <p class="form-note" style="margin-top:14px;">A linha "Você" reflete o progresso real deste navegador — cursos assistidos e participação na Central de Dúvidas.</p>
       </div>
     </section>
 
@@ -369,6 +421,8 @@
 <script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
 <script>
+var sb = window.getSupabaseClient();
+
 function initApp() {
   var data = CIStore.load();
   var activeCourseId = data.courses[0] ? data.courses[0].id : null;
@@ -463,6 +517,91 @@ function initApp() {
     }).join('');
   }
 
+  async function callAdminMembersApi(payload) {
+    var session = (await sb.auth.getSession()).data.session;
+    var res = await fetch('/api/admin-members', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify(payload)
+    });
+    var json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Erro desconhecido');
+    return json;
+  }
+
+  async function renderRealMembers() {
+    var body = document.getElementById('realMembersBody');
+    var { data: profiles, error } = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+    if (error) { body.innerHTML = '<tr><td colspan="6"><div class="empty-state">Não foi possível carregar os membros: ' + error.message + '</div></td></tr>'; return; }
+    if (!profiles.length) { body.innerHTML = '<tr><td colspan="6"><div class="empty-state">Nenhum membro cadastrado ainda.</div></td></tr>'; return; }
+
+    var meId = (await sb.auth.getSession()).data.session.user.id;
+
+    body.innerHTML = profiles.map(function (p) {
+      var joined = new Date(p.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+      var isMe = p.id === meId;
+      var toggleLabel = p.role === 'admin' ? 'Tornar aluno' : 'Tornar admin';
+      return '<tr>' +
+        '<td>' + (p.full_name || '(sem nome)') + (isMe ? ' <span class="table-tag">Você</span>' : '') + '</td>' +
+        '<td>' + (p.email || '') + '</td>' +
+        '<td>' + (p.profession || '—') + '</td>' +
+        '<td><span class="table-tag">' + (p.role === 'admin' ? 'Administrador' : 'Aluno') + '</span></td>' +
+        '<td>' + joined + '</td>' +
+        '<td style="text-align:right;white-space:nowrap;">' +
+          (isMe ? '' :
+            '<button class="btn btn-outline btn-sm" data-toggle-role="' + p.id + '" data-current-role="' + p.role + '" style="margin-right:6px;">' + toggleLabel + '</button>' +
+            '<button class="btn-danger" data-remove-member="' + p.id + '">Remover</button>'
+          ) +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  document.getElementById('inviteForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('inviteSubmit');
+    var payload = {
+      action: 'invite',
+      fullName: document.getElementById('inviteName').value.trim(),
+      email: document.getElementById('inviteEmail').value.trim(),
+      profession: document.getElementById('inviteProfession').value,
+      role: document.getElementById('inviteRole').value
+    };
+    if (!payload.email) return;
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    try {
+      await callAdminMembersApi(payload);
+      toast('Convite enviado para ' + payload.email);
+      e.target.reset();
+      renderRealMembers();
+    } catch (err) {
+      toast('Erro: ' + err.message);
+    }
+    btn.disabled = false; btn.textContent = 'Enviar convite';
+  });
+
+  document.getElementById('realMembersBody').addEventListener('click', async function (e) {
+    var toggleBtn = e.target.closest('[data-toggle-role]');
+    if (toggleBtn) {
+      var newRole = toggleBtn.getAttribute('data-current-role') === 'admin' ? 'aluno' : 'admin';
+      try {
+        await callAdminMembersApi({ action: 'setRole', userId: toggleBtn.getAttribute('data-toggle-role'), role: newRole });
+        toast('Papel atualizado');
+        renderRealMembers();
+      } catch (err) { toast('Erro: ' + err.message); }
+      return;
+    }
+    var removeBtn = e.target.closest('[data-remove-member]');
+    if (removeBtn) {
+      if (!confirm('Remover esta conta? Essa ação não pode ser desfeita.')) return;
+      try {
+        await callAdminMembersApi({ action: 'remove', userId: removeBtn.getAttribute('data-remove-member') });
+        toast('Membro removido');
+        renderRealMembers();
+      } catch (err) { toast('Erro: ' + err.message); }
+    }
+  });
+
   function fillSettingsForm() {
     document.getElementById('setHeroTitle').value = data.settings.heroTitle;
     document.getElementById('setHeroSubtitle').value = data.settings.heroSubtitle;
@@ -479,6 +618,7 @@ function initApp() {
     renderMaterials();
     renderAnnouncements();
     renderMembers();
+    renderRealMembers();
   }
 
   // Nav
@@ -670,8 +810,6 @@ function initApp() {
 }
 
 (function () {
-  var sb = window.getSupabaseClient();
-
   document.getElementById('logoutLink').addEventListener('click', function (e) {
     e.preventDefault();
     sb.auth.signOut().then(function () { window.location.href = 'index.html'; });

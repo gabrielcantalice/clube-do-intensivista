@@ -8,6 +8,7 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text not null default '',
+  email text default '',
   profession text default '',
   role text not null default 'aluno' check (role in ('aluno', 'admin')),
   created_at timestamptz not null default now()
@@ -34,8 +35,8 @@ create policy "Cada pessoa cria só o próprio perfil"
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name, profession)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', ''), coalesce(new.raw_user_meta_data->>'profession', ''));
+  insert into public.profiles (id, full_name, email, profession)
+  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', ''), new.email, coalesce(new.raw_user_meta_data->>'profession', ''));
   return new;
 end;
 $$ language plpgsql security definer;
