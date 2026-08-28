@@ -388,12 +388,13 @@ section{padding:100px 0;}
   border:1px solid rgba(151,221,171,.4);border-radius:999px;padding:4px 10px;width:fit-content;margin:0 6px;
 }
 .app-nav{display:flex;flex-direction:column;gap:3px;}
-.app-nav button{
+.app-nav button, .app-nav a{
   display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;border:none;background:none;
   color:rgba(255,255,255,.72);font-weight:600;font-size:.87rem;text-align:left;width:100%;font-family:inherit;
+  text-decoration:none;box-sizing:border-box;
 }
-.app-nav button svg{flex:none;opacity:.85;}
-.app-nav button:hover{background:rgba(255,255,255,.06);color:#fff;}
+.app-nav button svg, .app-nav a svg{flex:none;opacity:.85;}
+.app-nav button:hover, .app-nav a:hover{background:rgba(255,255,255,.06);color:#fff;}
 .app-nav button.active{background:rgba(151,221,171,.14);color:#fff;}
 .app-sidebar-foot{margin-top:auto;padding:0 6px;font-size:.76rem;color:rgba(255,255,255,.5);}
 .app-sidebar-foot a{color:rgba(255,255,255,.75);font-weight:600;}
@@ -596,12 +597,12 @@ section{padding:100px 0;}
   }
   .app-more-sheet.show{display:block;transform:translateY(0);}
   .app-more-sheet .sheet-handle{width:36px;height:4px;background:var(--line);border-radius:999px;margin:6px auto 16px;}
-  .app-more-sheet button{
-    display:flex;align-items:center;gap:13px;width:100%;padding:13px 12px;border-radius:11px;
-    background:none;border:none;font-family:inherit;font-weight:600;font-size:.92rem;color:var(--ink);text-align:left;
+  .app-more-sheet button, .app-more-sheet a{
+    display:flex;align-items:center;gap:13px;width:100%;padding:13px 12px;border-radius:11px;box-sizing:border-box;
+    background:none;border:none;font-family:inherit;font-weight:600;font-size:.92rem;color:var(--ink);text-align:left;text-decoration:none;
   }
   .app-more-sheet button.active{background:rgba(151,221,171,.16);color:var(--purple-dark);}
-  .app-more-sheet button svg{flex:none;opacity:.8;}
+  .app-more-sheet button svg, .app-more-sheet a svg{flex:none;opacity:.8;}
   .app-more-sheet .sheet-divider{height:1px;background:var(--line);margin:8px 4px;}
   .app-more-sheet .sheet-logout{color:#b3382f;}
 }
