@@ -9,7 +9,9 @@
 </head>
 <body>
 
-<div class="app-shell">
+<div id="authGate" style="position:fixed;inset:0;background:var(--paper);z-index:9999;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-family:var(--font-body);font-size:.92rem;">Verificando sua sessão…</div>
+
+<div class="app-shell" style="visibility:hidden;" id="appShell">
   <aside class="app-sidebar">
     <div class="brand-mini">
       <img src="assets/logo-white.svg" class="logo-mark" alt="Clube do Intensivista">
@@ -48,7 +50,9 @@
       </button>
     </nav>
 
-    <div class="app-sidebar-foot">
+    <div class="app-sidebar-foot" style="display:flex;flex-direction:column;gap:8px;">
+      <span id="userEmailLabel" style="color:rgba(255,255,255,.5);font-size:.74rem;"></span>
+      <a href="#" id="logoutLink">Sair da conta</a>
       <a href="index.html">&larr; Ver site publicado</a>
     </div>
   </aside>
@@ -166,6 +170,14 @@
             <label>Link de inscrição/pagamento</label>
             <input type="url" id="courseExternalLink" placeholder="https://pay.hotmart.com/...">
           </div>
+          <div class="full" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
+            <label style="margin-bottom:2px;">Onde o aluno assiste às aulas</label>
+            <p style="margin:0 0 10px;font-size:.78rem;color:var(--ink-soft);">Deixe em branco para as aulas ficarem dentro do próprio Clube (cadastradas abaixo). Preencha se o aluno for assistir direto na Hotmart (ou outra plataforma) — a Área do Aluno mostrará um botão levando pra lá em vez da lista de aulas internas.</p>
+          </div>
+          <div class="full">
+            <label>Link para assistir (Hotmart Club, etc.)</label>
+            <input type="url" id="courseWatchLink" placeholder="https://purchase.hotmart.com/... (opcional)">
+          </div>
           <div class="full">
             <button type="submit" class="btn btn-primary">Criar curso</button>
           </div>
@@ -190,6 +202,7 @@
             <p id="adminSelectedCourseLabel"></p>
           </div>
         </div>
+        <p class="form-note" style="margin:-6px 0 14px;">Se o curso selecionado tem um link de "assistir" preenchido, essa lista de aulas fica só como conteúdo programático informativo — o aluno assiste mesmo é na plataforma externa.</p>
         <form class="app-form" id="lessonForm">
           <div>
             <label>Título da aula</label>
@@ -352,9 +365,11 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
 <script>
-(function () {
+function initApp() {
   var data = CIStore.load();
   var activeCourseId = data.courses[0] ? data.courses[0].id : null;
 
@@ -496,10 +511,11 @@
     var description = document.getElementById('courseDescription').value.trim();
     var externalPrice = document.getElementById('courseExternalPrice').value.trim();
     var externalLink = document.getElementById('courseExternalLink').value.trim();
+    var watchLink = document.getElementById('courseWatchLink').value.trim();
     if (!title) return;
     var course = {
       id: CIStore.uid('course'), title: title, modality: modality, workload: workload, description: description,
-      externalPrice: externalPrice, externalLink: externalLink, lessons: []
+      externalPrice: externalPrice, externalLink: externalLink, hotmartWatchUrl: watchLink, lessons: []
     };
     data.courses.push(course);
     activeCourseId = course.id;
@@ -651,6 +667,31 @@
 
   fillSettingsForm();
   renderAll();
+}
+
+(function () {
+  var sb = window.getSupabaseClient();
+
+  document.getElementById('logoutLink').addEventListener('click', function (e) {
+    e.preventDefault();
+    sb.auth.signOut().then(function () { window.location.href = 'index.html'; });
+  });
+
+  sb.auth.getSession().then(async function (res) {
+    var session = res.data.session;
+    if (!session) { window.location.href = 'entrar.html'; return; }
+
+    var { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+    if (!profile || profile.role !== 'admin') {
+      window.location.href = 'area-aluno.html';
+      return;
+    }
+
+    document.getElementById('userEmailLabel').textContent = session.user.email;
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('appShell').style.visibility = 'visible';
+    initApp();
+  });
 })();
 </script>
 </body>

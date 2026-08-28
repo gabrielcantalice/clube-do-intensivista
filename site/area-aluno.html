@@ -9,7 +9,9 @@
 </head>
 <body>
 
-<div class="app-shell">
+<div id="authGate" style="position:fixed;inset:0;background:var(--paper);z-index:9999;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-family:var(--font-body);font-size:.92rem;">Verificando sua sessão…</div>
+
+<div class="app-shell" style="visibility:hidden;" id="appShell">
   <aside class="app-sidebar">
     <div class="brand-mini">
       <img src="assets/logo-white.svg" class="logo-mark" alt="Clube do Intensivista">
@@ -44,7 +46,9 @@
       </button>
     </nav>
 
-    <div class="app-sidebar-foot">
+    <div class="app-sidebar-foot" style="display:flex;flex-direction:column;gap:8px;">
+      <span id="userEmailLabel" style="color:rgba(255,255,255,.5);font-size:.74rem;"></span>
+      <a href="#" id="logoutLink">Sair da conta</a>
       <a href="index.html">&larr; Voltar ao site</a>
     </div>
   </aside>
@@ -209,9 +213,11 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
 <script>
-(function () {
+function initApp() {
   var data = CIStore.load();
   var progress = CIStore.loadProgress();
   var enrolledIds = data.courses.map(function (c) { return c.id; });
@@ -418,6 +424,23 @@
   function renderLessons() {
     var course = data.courses.find(function (c) { return c.id === activeCourseId; });
     if (!course) return;
+
+    if (course.hotmartWatchUrl) {
+      document.getElementById('alunoCourseProgressBar').style.width = '0%';
+      var syllabus = course.lessons.length
+        ? '<h4 style="margin:18px 0 10px;font-size:.88rem;color:var(--ink-soft);">Conteúdo programático</h4>' +
+          course.lessons.map(function (l) {
+            return '<div class="lesson-row"><div class="lesson-title">' + l.title + '<small>' + l.duration + '</small></div></div>';
+          }).join('')
+        : '';
+      document.getElementById('alunoLessonsList').innerHTML =
+        '<div class="cert-card" style="margin-bottom:4px;">' +
+          '<div><h4>Este curso é assistido na Hotmart</h4><p>Use o mesmo e-mail da compra para acessar as aulas.</p></div>' +
+          '<a href="' + course.hotmartWatchUrl + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Assistir agora</a>' +
+        '</div>' + syllabus;
+      return;
+    }
+
     document.getElementById('alunoCourseProgressBar').style.width = courseProgress(course) + '%';
     document.getElementById('alunoLessonsList').innerHTML = course.lessons.map(function (l) {
       var watched = !!progress[l.id];
@@ -590,6 +613,24 @@
   });
 
   renderAll();
+}
+
+(function () {
+  var sb = window.getSupabaseClient();
+
+  document.getElementById('logoutLink').addEventListener('click', function (e) {
+    e.preventDefault();
+    sb.auth.signOut().then(function () { window.location.href = 'index.html'; });
+  });
+
+  sb.auth.getSession().then(function (res) {
+    var session = res.data.session;
+    if (!session) { window.location.href = 'entrar.html'; return; }
+    document.getElementById('userEmailLabel').textContent = session.user.email;
+    document.getElementById('authGate').style.display = 'none';
+    document.getElementById('appShell').style.visibility = 'visible';
+    initApp();
+  });
 })();
 </script>
 </body>

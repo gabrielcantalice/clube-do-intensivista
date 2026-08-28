@@ -34,8 +34,8 @@ create policy "Cada pessoa cria só o próprio perfil"
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', ''));
+  insert into public.profiles (id, full_name, profession)
+  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', ''), coalesce(new.raw_user_meta_data->>'profession', ''));
   return new;
 end;
 $$ language plpgsql security definer;
@@ -64,6 +64,7 @@ create table if not exists public.courses (
   external_price text default '',        -- ex: "R$ 497" (preenchido quando vendido fora do site)
   external_link text default '',         -- link de checkout (Hotmart, etc.) — vazio = curso gratuito interno
   hotmart_product_id text default '',    -- ID do produto na Hotmart, usado para casar com o webhook
+  hotmart_watch_url text default '',     -- se preenchido, o aluno assiste as aulas na Hotmart (não no site)
   created_at timestamptz not null default now()
 );
 

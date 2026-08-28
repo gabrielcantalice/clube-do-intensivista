@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar | Clube do Intensivista</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{background:var(--paper-alt);min-height:100vh;}
+  .auth-header{padding:26px 32px;}
+  .auth-shell{display:flex;justify-content:center;padding:20px 20px 80px;}
+  .auth-card{
+    width:100%;max-width:440px;background:var(--white);border:1px solid var(--line);
+    border-radius:var(--radius-md);box-shadow:var(--shadow-card);padding:36px 34px;
+  }
+  .auth-tabs{display:flex;gap:4px;background:var(--paper-alt);border-radius:999px;padding:4px;margin-bottom:26px;}
+  .auth-tab{flex:1;border:none;background:none;padding:10px;border-radius:999px;font-weight:700;font-size:.86rem;color:var(--ink-soft);cursor:pointer;}
+  .auth-tab.active{background:var(--ink);color:#fff;}
+  .auth-panel{display:none;}
+  .auth-panel.active{display:block;}
+  .auth-panel h1{font-size:1.3rem;margin-bottom:4px;}
+  .auth-panel p.sub{font-size:.86rem;margin-bottom:22px;}
+  .auth-field{margin-bottom:15px;}
+  .auth-field label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;color:var(--ink);}
+  .auth-field input, .auth-field select{
+    width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid var(--line);font-family:inherit;font-size:.92rem;background:var(--paper);
+  }
+  .auth-field input:focus, .auth-field select:focus{outline:none;border-color:var(--purple);}
+  .auth-forgot{display:block;text-align:right;font-size:.8rem;color:var(--purple-dark);font-weight:600;margin:-6px 0 18px;}
+  .auth-msg{font-size:.84rem;padding:11px 14px;border-radius:9px;margin-bottom:16px;display:none;}
+  .auth-msg.show{display:block;}
+  .auth-msg.error{background:rgba(216,90,90,.1);color:#b3382f;border:1px solid rgba(216,90,90,.3);}
+  .auth-msg.ok{background:rgba(151,221,171,.18);color:#2f6a45;border:1px solid rgba(151,221,171,.45);}
+  .auth-back{display:inline-flex;align-items:center;gap:8px;color:var(--ink-soft);font-weight:600;font-size:.86rem;}
+</style>
+</head>
+<body>
+
+<header class="auth-header">
+  <a href="index.html" class="auth-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    Voltar ao site
+  </a>
+</header>
+
+<div class="auth-shell">
+  <div class="auth-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;">
+      <img src="assets/logo.svg" alt="Clube do Intensivista" style="width:36px;height:auto;">
+      <strong style="font-family:var(--font-head);font-size:1rem;">Clube do Intensivista</strong>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Entrar</button>
+      <button class="auth-tab" data-tab="signup">Criar conta</button>
+    </div>
+
+    <div class="auth-msg" id="authMsg"></div>
+
+    <!-- LOGIN -->
+    <div class="auth-panel active" data-panel="login">
+      <h1>Bem-vindo(a) de volta</h1>
+      <p class="sub">Entre para acessar seus cursos, materiais e a comunidade do Clube.</p>
+      <form id="loginForm">
+        <div class="auth-field">
+          <label>E-mail</label>
+          <input type="email" id="loginEmail" required autocomplete="email">
+        </div>
+        <div class="auth-field">
+          <label>Senha</label>
+          <input type="password" id="loginPassword" required autocomplete="current-password">
+        </div>
+        <a href="#" class="auth-forgot" id="forgotLink">Esqueci minha senha</a>
+        <button type="submit" class="btn btn-primary btn-block" id="loginSubmit">Entrar</button>
+      </form>
+    </div>
+
+    <!-- SIGNUP -->
+    <div class="auth-panel" data-panel="signup">
+      <h1>Criar sua conta gratuita</h1>
+      <p class="sub">Acesso à Área do Aluno, cursos gratuitos e à Biblioteca do Intensivista.</p>
+      <form id="signupForm">
+        <div class="auth-field">
+          <label>Nome completo</label>
+          <input type="text" id="signupName" required autocomplete="name">
+        </div>
+        <div class="auth-field">
+          <label>Profissão</label>
+          <select id="signupProfession">
+            <option>Fisioterapia</option>
+            <option>Enfermagem</option>
+            <option>Medicina</option>
+            <option>Estudante</option>
+            <option>Outra</option>
+          </select>
+        </div>
+        <div class="auth-field">
+          <label>E-mail</label>
+          <input type="email" id="signupEmail" required autocomplete="email">
+        </div>
+        <div class="auth-field">
+          <label>Senha</label>
+          <input type="password" id="signupPassword" required minlength="6" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="signupSubmit">Criar conta</button>
+        <p class="form-note" style="margin-top:12px;">Ao criar sua conta você concorda em receber comunicações do Clube do Intensivista.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script>
+(function () {
+  var sb = window.getSupabaseClient();
+  var msgEl = document.getElementById('authMsg');
+
+  function showMsg(text, kind) {
+    msgEl.textContent = text;
+    msgEl.className = 'auth-msg show ' + kind;
+  }
+  function clearMsg() {
+    msgEl.className = 'auth-msg';
+  }
+
+  document.querySelectorAll('.auth-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.auth-tab').forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var target = tab.getAttribute('data-tab');
+      document.querySelectorAll('.auth-panel').forEach(function (p) { p.classList.toggle('active', p.getAttribute('data-panel') === target); });
+      clearMsg();
+    });
+  });
+
+  async function redirectByRole(userId) {
+    var { data: profile } = await sb.from('profiles').select('role').eq('id', userId).maybeSingle();
+    window.location.href = (profile && profile.role === 'admin') ? 'admin.html' : 'area-aluno.html';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    clearMsg();
+    var email = document.getElementById('loginEmail').value.trim();
+    var password = document.getElementById('loginPassword').value;
+    var btn = document.getElementById('loginSubmit');
+    btn.disabled = true; btn.textContent = 'Entrando...';
+    var { data, error } = await sb.auth.signInWithPassword({ email: email, password: password });
+    btn.disabled = false; btn.textContent = 'Entrar';
+    if (error) {
+      showMsg('Não foi possível entrar: ' + (error.message === 'Invalid login credentials' ? 'e-mail ou senha incorretos.' : error.message), 'error');
+      return;
+    }
+    await redirectByRole(data.user.id);
+  });
+
+  document.getElementById('signupForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    clearMsg();
+    var name = document.getElementById('signupName').value.trim();
+    var profession = document.getElementById('signupProfession').value;
+    var email = document.getElementById('signupEmail').value.trim();
+    var password = document.getElementById('signupPassword').value;
+    var btn = document.getElementById('signupSubmit');
+    btn.disabled = true; btn.textContent = 'Criando conta...';
+    var { data, error } = await sb.auth.signUp({
+      email: email,
+      password: password,
+      options: { data: { full_name: name, profession: profession } }
+    });
+    btn.disabled = false; btn.textContent = 'Criar conta';
+    if (error) {
+      showMsg('Não foi possível criar a conta: ' + error.message, 'error');
+      return;
+    }
+    if (data.session) {
+      await redirectByRole(data.user.id);
+    } else {
+      showMsg('Conta criada! Confira seu e-mail para confirmar o cadastro antes de entrar.', 'ok');
+    }
+  });
+
+  document.getElementById('forgotLink').addEventListener('click', async function (e) {
+    e.preventDefault();
+    var email = document.getElementById('loginEmail').value.trim();
+    if (!email) { showMsg('Digite seu e-mail no campo acima primeiro.', 'error'); return; }
+    var { error } = await sb.auth.resetPasswordForEmail(email);
+    if (error) { showMsg('Erro ao enviar e-mail de redefinição: ' + error.message, 'error'); return; }
+    showMsg('Enviamos um e-mail com instruções para redefinir sua senha.', 'ok');
+  });
+
+  // Se já estiver logado, pula direto para a área certa
+  sb.auth.getSession().then(function (res) {
+    if (res.data.session) redirectByRole(res.data.session.user.id);
+  });
+})();
+</script>
+</body>
+</html>
