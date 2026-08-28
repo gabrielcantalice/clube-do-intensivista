@@ -66,6 +66,7 @@ create table if not exists public.courses (
   external_link text default '',         -- link de checkout (Hotmart, etc.) — vazio = curso gratuito interno
   hotmart_product_id text default '',    -- ID do produto na Hotmart, usado para casar com o webhook
   hotmart_watch_url text default '',     -- se preenchido, o aluno assiste as aulas na Hotmart (não no site)
+  image_url text default '',             -- foto de capa do curso
   created_at timestamptz not null default now()
 );
 
@@ -157,6 +158,7 @@ create table if not exists public.events (
   event_date date not null,
   type text not null default 'Curso presencial',
   external_link text default '',
+  image_url text default '',             -- foto do evento
   created_at timestamptz not null default now()
 );
 
@@ -214,6 +216,27 @@ create policy "Aluno logado responde dúvida" on public.forum_answers for insert
 -- =========================================================
 alter publication supabase_realtime add table public.forum_threads;
 alter publication supabase_realtime add table public.forum_answers;
+
+-- =========================================================
+-- 10. ARMAZENAMENTO DE FOTOS (capa de cursos e eventos)
+-- =========================================================
+insert into storage.buckets (id, name, public)
+values ('media', 'media', true)
+on conflict (id) do nothing;
+
+create policy "Qualquer pessoa vê as fotos"
+  on storage.objects for select
+  using (bucket_id = 'media');
+
+create policy "Só admin envia fotos"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'media' and is_admin());
+
+create policy "Só admin remove fotos"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'media' and is_admin());
 
 -- =========================================================
 -- Pronto. Depois de rodar este script:

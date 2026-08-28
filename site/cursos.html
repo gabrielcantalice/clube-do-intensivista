@@ -242,8 +242,11 @@
     var ctaHtml = c.externalLink
       ? '<a href="' + c.externalLink + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Inscrever-se</a>'
       : '<a href="contato.html" class="btn btn-outline btn-sm">Ver curso</a>';
+    var mediaStyle = c.imageUrl
+      ? ' style="background-image:url(\'' + c.imageUrl + '\');background-size:cover;background-position:center;"'
+      : '';
     article.innerHTML =
-      '<div class="card-media"><span class="tag">Novo</span></div>' +
+      '<div class="card-media"' + mediaStyle + '><span class="tag">Novo</span></div>' +
       '<div class="card-body">' +
         '<div class="card-meta"><span>' + c.modality + '</span>' + (c.workload ? '<span>' + c.workload + '</span>' : '') + '<span>' + c.lessons.length + ' aulas</span></div>' +
         '<h3>' + c.title + '</h3>' +

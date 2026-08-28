@@ -110,8 +110,12 @@
             <label>Link de inscrição externo (opcional)</label>
             <input type="url" id="evExternalLink" placeholder="Preencha só se a inscrição for paga, fora do site (ex: Hotmart)">
           </div>
+          <div class="full">
+            <label>Foto do evento (opcional)</label>
+            <input type="file" id="evImage" accept="image/*">
+          </div>
           <div class="full" style="align-self:flex-end;">
-            <button type="submit" class="btn btn-primary">Adicionar evento</button>
+            <button type="submit" class="btn btn-primary" id="eventSubmit">Adicionar evento</button>
           </div>
         </form>
       </div>
@@ -158,6 +162,10 @@
             <label>Descrição curta</label>
             <textarea id="courseDescription" rows="2" placeholder="Uma frase sobre o que o aluno aprende neste curso"></textarea>
           </div>
+          <div class="full">
+            <label>Foto de capa do curso (opcional)</label>
+            <input type="file" id="courseImage" accept="image/*">
+          </div>
           <div class="full" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
             <label style="margin-bottom:2px;">Curso pago em plataforma externa (opcional)</label>
             <p style="margin:0 0 10px;font-size:.78rem;color:var(--ink-soft);">Preencha só se este curso for vendido fora do site (ex: Hotmart). Se preenchido, o botão "Inscrever-se" leva direto para esse link em vez do fluxo gratuito interno.</p>
@@ -179,7 +187,7 @@
             <input type="url" id="courseWatchLink" placeholder="https://purchase.hotmart.com/... (opcional)">
           </div>
           <div class="full">
-            <button type="submit" class="btn btn-primary">Criar curso</button>
+            <button type="submit" class="btn btn-primary" id="courseSubmit">Criar curso</button>
           </div>
         </form>
       </div>
@@ -643,7 +651,18 @@ function initApp() {
   });
 
   // Create course
-  document.getElementById('courseForm').addEventListener('submit', function (e) {
+  async function uploadImageIfAny(fileInputId) {
+    var input = document.getElementById(fileInputId);
+    var file = input.files && input.files[0];
+    if (!file) return '';
+    var path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    var { error } = await sb.storage.from('media').upload(path, file, { upsert: false });
+    if (error) { throw new Error('Falha ao enviar a foto: ' + error.message); }
+    var { data: pub } = sb.storage.from('media').getPublicUrl(path);
+    return pub.publicUrl;
+  }
+
+  document.getElementById('courseForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     var title = document.getElementById('courseTitle').value.trim();
     var modality = document.getElementById('courseModality').value;
@@ -653,9 +672,21 @@ function initApp() {
     var externalLink = document.getElementById('courseExternalLink').value.trim();
     var watchLink = document.getElementById('courseWatchLink').value.trim();
     if (!title) return;
+
+    var btn = document.getElementById('courseSubmit');
+    btn.disabled = true; btn.textContent = 'Criando...';
+    var imageUrl = '';
+    try {
+      imageUrl = await uploadImageIfAny('courseImage');
+    } catch (err) {
+      toast(err.message);
+      btn.disabled = false; btn.textContent = 'Criar curso';
+      return;
+    }
+
     var course = {
       id: CIStore.uid('course'), title: title, modality: modality, workload: workload, description: description,
-      externalPrice: externalPrice, externalLink: externalLink, hotmartWatchUrl: watchLink, lessons: []
+      externalPrice: externalPrice, externalLink: externalLink, hotmartWatchUrl: watchLink, imageUrl: imageUrl, lessons: []
     };
     data.courses.push(course);
     activeCourseId = course.id;
@@ -664,6 +695,7 @@ function initApp() {
     renderLessons();
     renderStats();
     e.target.reset();
+    btn.disabled = false; btn.textContent = 'Criar curso';
     toast('Curso criado — já disponível na página pública de Cursos');
   });
 
@@ -681,18 +713,31 @@ function initApp() {
   });
 
   // Event form
-  document.getElementById('eventForm').addEventListener('submit', function (e) {
+  document.getElementById('eventForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     var title = document.getElementById('evTitle').value.trim();
     var date = document.getElementById('evDate').value;
     var type = document.getElementById('evType').value;
     var externalLink = document.getElementById('evExternalLink').value.trim();
     if (!title || !date) return;
-    data.events.push({ id: CIStore.uid('ev'), title: title, date: date, type: type, externalLink: externalLink });
+
+    var btn = document.getElementById('eventSubmit');
+    btn.disabled = true; btn.textContent = 'Adicionando...';
+    var imageUrl = '';
+    try {
+      imageUrl = await uploadImageIfAny('evImage');
+    } catch (err) {
+      toast(err.message);
+      btn.disabled = false; btn.textContent = 'Adicionar evento';
+      return;
+    }
+
+    data.events.push({ id: CIStore.uid('ev'), title: title, date: date, type: type, externalLink: externalLink, imageUrl: imageUrl });
     persist();
     renderEvents();
     renderStats();
     e.target.reset();
+    btn.disabled = false; btn.textContent = 'Adicionar evento';
     toast('Evento adicionado');
   });
 

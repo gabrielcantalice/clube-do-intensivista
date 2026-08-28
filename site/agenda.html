@@ -165,9 +165,12 @@
     var cta = ev.externalLink
       ? '<a href="' + ev.externalLink + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Inscrever-se</a>'
       : '<a href="contato.html" class="btn btn-outline btn-sm">Detalhes</a>';
+    var thumb = ev.imageUrl
+      ? '<img src="' + ev.imageUrl + '" alt="" style="width:44px;height:44px;border-radius:9px;object-fit:cover;flex:none;margin-right:12px;">'
+      : '';
     item.innerHTML =
       '<div class="agenda-date"><strong>' + day + '</strong><span>' + month + '</span></div>' +
-      '<div class="agenda-info"><h4>' + ev.title + '</h4><p>' + ev.type + '</p></div>' +
+      '<div class="agenda-info" style="display:flex;align-items:center;">' + thumb + '<div><h4>' + ev.title + '</h4><p>' + ev.type + '</p></div></div>' +
       cta;
     list.appendChild(item);
   });
