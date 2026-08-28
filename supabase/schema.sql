@@ -34,12 +34,18 @@ create policy "Cada pessoa cria só o próprio perfil"
   to authenticated
   with check (auth.uid() = id);
 
--- Cria o perfil automaticamente quando alguém se cadastra
+-- Cria o perfil automaticamente quando alguém se cadastra. "on conflict do
+-- nothing" evita que o cadastro quebre se, por algum motivo, já existir uma
+-- linha de perfil com esse id (ex: tentativa anterior que falhou no meio).
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   insert into public.profiles (id, full_name, email, profession)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', ''), new.email, coalesce(new.raw_user_meta_data->>'profession', ''));
+  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', ''), new.email, coalesce(new.raw_user_meta_data->>'profession', ''))
+  on conflict (id) do nothing;
+  return new;
+exception when others then
+  raise warning 'handle_new_user falhou pra %: %', new.id, sqlerrm;
   return new;
 end;
 $$ language plpgsql security definer;
