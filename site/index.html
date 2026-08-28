@@ -51,17 +51,17 @@
         <div><strong>4,9/5</strong><span>avaliação média</span></div>
       </div>
     </div>
-    <div class="hero-visual">
-      <div class="badge-live" style="border-color:rgba(255,255,255,.4);color:#fff;">Próxima turma abrindo em breve</div>
+    <a href="agenda.html" class="hero-visual" id="heroNextWrap">
+      <div class="badge-live" style="border-color:rgba(255,255,255,.4);color:#fff;" id="heroNextBadge">Próxima turma abrindo em breve</div>
       <div style="margin-top:18px;">
-        <h3 style="color:#fff;font-size:1.2rem;">Ultrassonografia à Beira-Leito</h3>
-        <p style="color:rgba(255,255,255,.8);font-size:.92rem;">Curso presencial com prática guiada e turmas reduzidas.</p>
+        <h3 style="color:#fff;font-size:1.2rem;" id="heroNextTitle">Ultrassonografia à Beira-Leito</h3>
+        <p style="color:rgba(255,255,255,.8);font-size:.92rem;" id="heroNextDesc">Curso presencial com prática guiada e turmas reduzidas.</p>
       </div>
-      <div class="hero-visual-card">
-        <strong>Ventilação Mecânica na Prática</strong>
-        <span style="font-size:.85rem;color:var(--ink-soft);">Turma 09/2026 · Vagas limitadas</span>
+      <div class="hero-visual-card" id="heroSecondCard">
+        <strong id="heroSecondTitle">Ventilação Mecânica na Prática</strong>
+        <span style="font-size:.85rem;color:var(--ink-soft);" id="heroSecondMeta">Turma 09/2026 · Vagas limitadas</span>
       </div>
-    </div>
+    </a>
   </div>
 </section>
 
@@ -422,6 +422,49 @@
   <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.5c1.5.9 3.3 1.4 5.2 1.4 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.7 0-3.3-.5-4.7-1.3l-.3-.2-2.8.9.9-2.7-.2-.3C4 15 3.5 13.5 3.5 12c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5zm4.6-6.3c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/></svg>
 </a>
 
+<script src="js/data-store.js"></script>
 <script src="js/main.js"></script>
+<script>
+(function () {
+  var wrap = document.getElementById('heroNextWrap');
+  if (!wrap || !window.CIStore) return;
+
+  var data = CIStore.load();
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  var upcoming = (data.events || [])
+    .filter(function (ev) { return ev.date && new Date(ev.date + 'T00:00:00') >= today; })
+    .sort(function (a, b) { return a.date.localeCompare(b.date); });
+
+  var secondCard = document.getElementById('heroSecondCard');
+
+  if (!upcoming.length) {
+    wrap.href = 'agenda.html';
+    document.getElementById('heroNextBadge').textContent = 'Fique de olho — novidades em breve';
+    secondCard.style.display = 'none';
+    return;
+  }
+
+  function fmt(dateStr) {
+    var d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+  }
+
+  var next = upcoming[0];
+  document.getElementById('heroNextBadge').textContent = 'Próxima turma: ' + fmt(next.date);
+  document.getElementById('heroNextTitle').textContent = next.title;
+  document.getElementById('heroNextDesc').textContent = next.type + (next.externalPrice ? ' · ' + next.externalPrice : ' · Inscrição gratuita');
+  wrap.href = next.externalLink || 'agenda.html';
+
+  var second = upcoming[1];
+  if (second) {
+    document.getElementById('heroSecondTitle').textContent = second.title;
+    document.getElementById('heroSecondMeta').textContent = 'Turma ' + fmt(second.date) + (second.externalPrice ? ' · ' + second.externalPrice : '');
+  } else {
+    secondCard.innerHTML = '<strong>Ver agenda completa</strong><span style="font-size:.85rem;color:var(--ink-soft);">Todos os próximos eventos e cursos</span>';
+  }
+})();
+</script>
 </body>
 </html>

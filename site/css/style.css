@@ -133,7 +133,10 @@ section{padding:100px 0;}
 .hero-visual{
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);
   border-radius:var(--radius-lg);padding:28px;backdrop-filter:blur(6px);
+  display:block;text-decoration:none;color:inherit;cursor:pointer;
+  transition:transform .18s ease, border-color .18s ease, background .18s ease;
 }
+.hero-visual:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.12);}
 .hero-visual img{border-radius:var(--radius-md);}
 .hero-visual-card{background:var(--white);color:var(--ink);border-radius:var(--radius-md);padding:18px 20px;margin-top:-40px;position:relative;box-shadow:var(--shadow-soft);}
 .hero-visual-card strong{display:block;color:var(--purple-dark);font-family:var(--font-head);}
