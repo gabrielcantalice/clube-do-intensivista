@@ -565,11 +565,6 @@ section{padding:100px 0;}
   .app-card-head > button, .app-card-head > .btn-danger{width:100%;}
   .data-table{min-width:560px;}
   .modal-box{padding:22px;}
-}
-@media (max-width: 480px){
-  .app-topbar{flex-direction:column;align-items:stretch;}
-  .app-stats{grid-template-columns:1fr;}
-}
 
   .app-tabbar{
     display:flex;position:fixed;left:0;right:0;bottom:0;z-index:220;
@@ -609,4 +604,8 @@ section{padding:100px 0;}
   .app-more-sheet button svg{flex:none;opacity:.8;}
   .app-more-sheet .sheet-divider{height:1px;background:var(--line);margin:8px 4px;}
   .app-more-sheet .sheet-logout{color:#b3382f;}
+}
+@media (max-width: 480px){
+  .app-topbar{flex-direction:column;align-items:stretch;}
+  .app-stats{grid-template-columns:1fr;}
 }
