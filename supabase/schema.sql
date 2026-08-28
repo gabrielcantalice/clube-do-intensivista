@@ -157,15 +157,38 @@ create table if not exists public.events (
   title text not null,
   event_date date not null,
   type text not null default 'Curso presencial',
-  external_link text default '',
+  external_price text default '',        -- ex: "R$ 197" (preenchido quando o evento é pago)
+  external_link text default '',         -- link de pagamento/inscrição — vazio = evento gratuito, inscrição pelo site
   image_url text default '',             -- foto do evento
   created_at timestamptz not null default now()
 );
+alter table public.events add column if not exists external_price text default '';
 
 alter table public.events enable row level security;
 create policy "Todo mundo vê os eventos" on public.events for select using (true);
 create policy "Só admin gerencia eventos" on public.events for all
   to authenticated using (is_admin()) with check (is_admin());
+
+-- Inscrições de alunos em eventos gratuitos organizados pelo próprio site
+-- (eventos pagos usam o link de pagamento externo em vez disso)
+create table if not exists public.event_registrations (
+  id uuid primary key default gen_random_uuid(),
+  event_id uuid not null references public.events(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  full_name text default '',
+  email text default '',
+  created_at timestamptz not null default now(),
+  unique (event_id, user_id)
+);
+
+alter table public.event_registrations enable row level security;
+
+create policy "Aluno vê a própria inscrição, admin vê todas" on public.event_registrations for select
+  to authenticated using (user_id = auth.uid() or is_admin());
+create policy "Aluno se inscreve por conta própria" on public.event_registrations for insert
+  to authenticated with check (user_id = auth.uid());
+create policy "Aluno cancela a própria inscrição, admin remove qualquer uma" on public.event_registrations for delete
+  to authenticated using (user_id = auth.uid() or is_admin());
 
 -- =========================================================
 -- 7. COMUNICADOS

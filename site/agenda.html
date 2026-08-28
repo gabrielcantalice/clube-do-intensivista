@@ -147,33 +147,93 @@
   <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.7 1.5 5.3L2 22l4.8-1.5c1.5.9 3.3 1.4 5.2 1.4 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.7 0-3.3-.5-4.7-1.3l-.3-.2-2.8.9.9-2.7-.2-.3C4 15 3.5 13.5 3.5 12c0-4.7 3.8-8.5 8.5-8.5s8.5 3.8 8.5 8.5-3.8 8.5-8.5 8.5zm4.6-6.3c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.8 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/></svg>
 </a>
 
-<script src="js/data-store.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/events-api.js"></script>
 <script src="js/main.js"></script>
 <script>
 (function () {
-  var data = CIStore.load();
-  var extra = data.events.filter(function (ev) { return CIStore.SEED_IDS.events.indexOf(ev.id) === -1; });
-  if (!extra.length) return;
-  var list = document.getElementById('agendaList');
-  extra.sort(function (a, b) { return a.date.localeCompare(b.date); });
-  extra.forEach(function (ev) {
-    var d = new Date(ev.date + 'T12:00:00');
-    var day = d.toLocaleDateString('pt-BR', { day: '2-digit' });
-    var month = d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
-    var item = document.createElement('div');
-    item.className = 'agenda-item';
-    var cta = ev.externalLink
-      ? '<a href="' + ev.externalLink + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Inscrever-se</a>'
-      : '<a href="contato.html" class="btn btn-outline btn-sm">Detalhes</a>';
-    var thumb = ev.imageUrl
-      ? '<img src="' + ev.imageUrl + '" alt="" style="width:44px;height:44px;border-radius:9px;object-fit:cover;flex:none;margin-right:12px;">'
-      : '';
-    item.innerHTML =
-      '<div class="agenda-date"><strong>' + day + '</strong><span>' + month + '</span></div>' +
-      '<div class="agenda-info" style="display:flex;align-items:center;">' + thumb + '<div><h4>' + ev.title + '</h4><p>' + ev.type + (ev.externalPrice ? ' · ' + ev.externalPrice : '') + '</p></div></div>' +
-      cta;
-    list.appendChild(item);
-  });
+  var sb = window.getSupabaseClient();
+
+  function fmt(dateStr) {
+    var d = new Date(dateStr + 'T12:00:00');
+    return {
+      day: d.toLocaleDateString('pt-BR', { day: '2-digit' }),
+      month: d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')
+    };
+  }
+
+  function ctaHtml(ev, session, myRegIds) {
+    if (ev.external_link) {
+      return '<a href="' + ev.external_link + '" target="_blank" rel="noopener" class="btn btn-primary btn-sm">Inscrever-se' + (ev.external_price ? ' · ' + ev.external_price : '') + '</a>';
+    }
+    if (!session) {
+      return '<a href="entrar.html" class="btn btn-primary btn-sm">Inscrever-se</a>';
+    }
+    if (myRegIds[ev.id]) {
+      return '<button class="btn btn-outline btn-sm" data-cancel-reg="' + ev.id + '">Inscrito(a) · cancelar</button>';
+    }
+    return '<button class="btn btn-primary btn-sm" data-do-reg="' + ev.id + '">Inscrever-se</button>';
+  }
+
+  async function render() {
+    var events = [];
+    try { events = await EventsAPI.loadAllEvents(); } catch (err) { return; }
+    if (!events.length) return;
+
+    var session = (await sb.auth.getSession()).data.session;
+    var myRegIds = {};
+    if (session) {
+      try {
+        var mine = await EventsAPI.loadMyRegistrations(session.user.id);
+        mine.forEach(function (r) { myRegIds[r.event_id] = true; });
+      } catch (err) { /* segue sem marcar inscrições */ }
+    }
+
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var upcoming = events.filter(function (ev) { return new Date(ev.event_date + 'T00:00:00') >= today; });
+    if (!upcoming.length) return;
+    upcoming.sort(function (a, b) { return a.event_date.localeCompare(b.event_date); });
+
+    var list = document.getElementById('agendaList');
+    upcoming.forEach(function (ev) {
+      var d = fmt(ev.event_date);
+      var item = document.createElement('div');
+      item.className = 'agenda-item';
+      var thumb = ev.image_url
+        ? '<img src="' + ev.image_url + '" alt="" style="width:44px;height:44px;border-radius:9px;object-fit:cover;flex:none;margin-right:12px;">'
+        : '';
+      item.innerHTML =
+        '<div class="agenda-date"><strong>' + d.day + '</strong><span>' + d.month + '</span></div>' +
+        '<div class="agenda-info" style="display:flex;align-items:center;">' + thumb + '<div><h4>' + ev.title + '</h4><p>' + ev.type + (ev.external_price ? ' · ' + ev.external_price : '') + '</p></div></div>' +
+        ctaHtml(ev, session, myRegIds);
+      list.appendChild(item);
+    });
+
+    list.addEventListener('click', async function (e) {
+      var regBtn = e.target.closest('button[data-do-reg]');
+      var cancelBtn = e.target.closest('button[data-cancel-reg]');
+      if (!regBtn && !cancelBtn) return;
+      var btn = regBtn || cancelBtn;
+      var eventId = btn.getAttribute('data-do-reg') || btn.getAttribute('data-cancel-reg');
+      btn.disabled = true;
+      try {
+        if (regBtn) {
+          var { data: profile } = await sb.from('profiles').select('full_name, email').eq('id', session.user.id).maybeSingle();
+          await EventsAPI.registerForEvent(eventId, session.user.id, profile ? profile.full_name : '', profile ? profile.email : session.user.email);
+          btn.outerHTML = '<button class="btn btn-outline btn-sm" data-cancel-reg="' + eventId + '">Inscrito(a) · cancelar</button>';
+        } else {
+          await EventsAPI.cancelRegistration(eventId, session.user.id);
+          btn.outerHTML = '<button class="btn btn-primary btn-sm" data-do-reg="' + eventId + '">Inscrever-se</button>';
+        }
+      } catch (err) {
+        btn.disabled = false;
+        alert('Erro: ' + err.message);
+      }
+    });
+  }
+
+  render();
 })();
 </script>
 </body>

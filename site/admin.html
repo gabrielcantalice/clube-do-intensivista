@@ -138,7 +138,7 @@
           </div>
         </div>
         <table class="data-table">
-          <thead><tr><th>Data</th><th>Evento</th><th>Tipo</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Evento</th><th>Tipo</th><th>Inscritos</th><th></th></tr></thead>
           <tbody id="eventsBody"></tbody>
         </table>
       </div>
@@ -514,10 +514,22 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="registrationsModal">
+  <div class="modal-box" style="max-width:460px;">
+    <h3 id="registrationsModalTitle">Inscritos</h3>
+    <p>Pessoas inscritas neste evento gratuito. Você pode remover uma inscrição se precisar liberar vaga.</p>
+    <div id="registrationsModalList" style="display:grid;gap:2px;max-height:44vh;overflow-y:auto;margin:14px 0;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-block" id="registrationsModalClose" type="button">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
 <script src="js/courses-api.js"></script>
+<script src="js/events-api.js"></script>
 <script>
 var sb = window.getSupabaseClient();
 
@@ -525,12 +537,23 @@ async function initApp() {
   var data = CIStore.load();
   var courses = [];
   var activeCourseId = null;
+  var events = [];
+  var eventRegCounts = {};
   var myId = (await sb.auth.getSession()).data.session.user.id;
 
   async function loadCourses() {
     courses = await CoursesAPI.loadAllCourses();
     if (!activeCourseId || !courses.find(function (c) { return c.id === activeCourseId; })) {
       activeCourseId = courses[0] ? courses[0].id : null;
+    }
+  }
+
+  async function loadEvents() {
+    events = await EventsAPI.loadAllEvents();
+    var { data: regs, error } = await sb.from('event_registrations').select('event_id');
+    eventRegCounts = {};
+    if (!error) {
+      (regs || []).forEach(function (r) { eventRegCounts[r.event_id] = (eventRegCounts[r.event_id] || 0) + 1; });
     }
   }
 
@@ -551,7 +574,7 @@ async function initApp() {
   function renderStats() {
     var totalLessons = courses.reduce(function (sum, c) { return sum + (c.lessons || []).length; }, 0);
     var stats = [
-      { label: 'Próximos eventos', value: data.events.length },
+      { label: 'Próximos eventos', value: events.length },
       { label: 'Cursos ativos', value: courses.length },
       { label: 'Aulas cadastradas', value: totalLessons },
       { label: 'Materiais na biblioteca', value: data.materials.length }
@@ -562,11 +585,16 @@ async function initApp() {
   }
 
   function renderEvents() {
-    var sorted = data.events.slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+    var sorted = events.slice().sort(function (a, b) { return a.event_date.localeCompare(b.event_date); });
     var body = document.getElementById('eventsBody');
-    if (!sorted.length) { body.innerHTML = '<tr><td colspan="4"><div class="empty-state">Nenhum evento cadastrado.</div></td></tr>'; return; }
+    if (!sorted.length) { body.innerHTML = '<tr><td colspan="5"><div class="empty-state">Nenhum evento cadastrado.</div></td></tr>'; return; }
     body.innerHTML = sorted.map(function (ev) {
-      return '<tr><td>' + formatDate(ev.date) + '</td><td>' + ev.title + '</td><td><span class="table-tag">' + ev.type + '</span></td>' +
+      var isFree = !ev.external_link;
+      var inscritosCell = isFree
+        ? '<button class="btn btn-outline btn-sm" data-view-registrations="' + ev.id + '" data-event-title="' + ev.title + '">' + (eventRegCounts[ev.id] || 0) + ' inscrito(s)</button>'
+        : '<span class="table-tag">Externo</span>';
+      return '<tr><td>' + formatDate(ev.event_date) + '</td><td>' + ev.title + '</td><td><span class="table-tag">' + ev.type + '</span></td>' +
+        '<td>' + inscritosCell + '</td>' +
         '<td style="text-align:right;"><button class="btn-danger" data-del-event="' + ev.id + '">Remover</button></td></tr>';
     }).join('');
   }
@@ -795,6 +823,7 @@ async function initApp() {
 
   async function renderAll() {
     await loadCourses();
+    await loadEvents();
     renderStats();
     renderEvents();
     renderCourseChips();
@@ -960,25 +989,81 @@ async function initApp() {
       return;
     }
 
-    data.events.push({ id: CIStore.uid('ev'), title: title, date: date, type: type, externalPrice: externalPrice, externalLink: externalLink, imageUrl: imageUrl });
-    persist();
-    renderEvents();
-    renderStats();
-    e.target.reset();
-    updateEventPaidFields();
+    try {
+      var event = await EventsAPI.createEvent({
+        title: title, event_date: date, type: type,
+        external_price: externalPrice, external_link: externalLink, image_url: imageUrl
+      });
+      events.push(event);
+      renderEvents();
+      renderStats();
+      e.target.reset();
+      updateEventPaidFields();
+      toast('Evento adicionado');
+    } catch (err) {
+      toast('Erro ao adicionar evento: ' + err.message);
+    }
     btn.disabled = false; btn.textContent = 'Adicionar evento';
-    toast('Evento adicionado');
   });
 
-  document.getElementById('eventsBody').addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-del-event]');
+  document.getElementById('eventsBody').addEventListener('click', async function (e) {
+    var viewBtn = e.target.closest('button[data-view-registrations]');
+    if (viewBtn) {
+      openRegistrationsModal(viewBtn.getAttribute('data-view-registrations'), viewBtn.getAttribute('data-event-title'));
+      return;
+    }
+    var delBtn = e.target.closest('button[data-del-event]');
+    if (!delBtn) return;
+    var id = delBtn.getAttribute('data-del-event');
+    try {
+      await EventsAPI.deleteEvent(id);
+      events = events.filter(function (ev) { return ev.id !== id; });
+      renderEvents();
+      renderStats();
+      toast('Evento removido');
+    } catch (err) {
+      toast('Erro ao remover evento: ' + err.message);
+    }
+  });
+
+  async function openRegistrationsModal(eventId, eventTitle) {
+    document.getElementById('registrationsModalTitle').textContent = 'Inscritos — ' + eventTitle;
+    var listEl = document.getElementById('registrationsModalList');
+    listEl.innerHTML = '<div class="empty-state">Carregando...</div>';
+    document.getElementById('registrationsModal').classList.add('show');
+    try {
+      var regs = await EventsAPI.loadRegistrationsForEvent(eventId);
+      if (!regs.length) {
+        listEl.innerHTML = '<div class="empty-state">Ninguém se inscreveu neste evento ainda.</div>';
+        return;
+      }
+      listEl.innerHTML = regs.map(function (r) {
+        return '<div class="lesson-row" style="justify-content:space-between;">' +
+          '<div class="lesson-title">' + (r.full_name || '(sem nome)') + '<small>' + (r.email || '') + '</small></div>' +
+          '<button class="btn-danger" data-remove-registration="' + r.id + '" data-event-id="' + eventId + '">Remover</button>' +
+          '</div>';
+      }).join('');
+    } catch (err) {
+      listEl.innerHTML = '<div class="empty-state">Erro ao carregar inscritos: ' + err.message + '</div>';
+    }
+  }
+  document.getElementById('registrationsModalClose').addEventListener('click', function () {
+    document.getElementById('registrationsModal').classList.remove('show');
+  });
+  document.getElementById('registrationsModalList').addEventListener('click', async function (e) {
+    var btn = e.target.closest('button[data-remove-registration]');
     if (!btn) return;
-    var id = btn.getAttribute('data-del-event');
-    data.events = data.events.filter(function (ev) { return ev.id !== id; });
-    persist();
-    renderEvents();
-    renderStats();
-    toast('Evento removido');
+    var regId = btn.getAttribute('data-remove-registration');
+    var eventId = btn.getAttribute('data-event-id');
+    try {
+      await EventsAPI.removeRegistration(regId);
+      eventRegCounts[eventId] = Math.max(0, (eventRegCounts[eventId] || 1) - 1);
+      renderEvents();
+      openRegistrationsModal(eventId, document.getElementById('registrationsModalTitle').textContent.replace('Inscritos — ', ''));
+      toast('Inscrição removida');
+    } catch (err) {
+      toast('Erro ao remover inscrição: ' + err.message);
+    }
   });
 
   // Lesson form
