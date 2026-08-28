@@ -16,16 +16,19 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
+drop policy if exists "Qualquer pessoa logada vê os perfis (para o ranking)" on public.profiles;
 create policy "Qualquer pessoa logada vê os perfis (para o ranking)"
   on public.profiles for select
   to authenticated
   using (true);
 
+drop policy if exists "Cada pessoa edita só o próprio perfil" on public.profiles;
 create policy "Cada pessoa edita só o próprio perfil"
   on public.profiles for update
   to authenticated
   using (auth.uid() = id);
 
+drop policy if exists "Cada pessoa cria só o próprio perfil" on public.profiles;
 create policy "Cada pessoa cria só o próprio perfil"
   on public.profiles for insert
   to authenticated
@@ -41,6 +44,7 @@ begin
 end;
 $$ language plpgsql security definer;
 
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
@@ -83,14 +87,22 @@ create table if not exists public.lessons (
 alter table public.courses enable row level security;
 alter table public.lessons enable row level security;
 
+drop policy if exists "Todo mundo vê os cursos" on public.courses;
 create policy "Todo mundo vê os cursos" on public.courses for select using (true);
+drop policy if exists "Só admin cadastra curso" on public.courses;
 create policy "Só admin cadastra curso" on public.courses for insert to authenticated with check (is_admin());
+drop policy if exists "Só admin edita curso" on public.courses;
 create policy "Só admin edita curso" on public.courses for update to authenticated using (is_admin());
+drop policy if exists "Só admin remove curso" on public.courses;
 create policy "Só admin remove curso" on public.courses for delete to authenticated using (is_admin());
 
+drop policy if exists "Todo mundo vê as aulas" on public.lessons;
 create policy "Todo mundo vê as aulas" on public.lessons for select using (true);
+drop policy if exists "Só admin cadastra aula" on public.lessons;
 create policy "Só admin cadastra aula" on public.lessons for insert to authenticated with check (is_admin());
+drop policy if exists "Só admin edita aula" on public.lessons;
 create policy "Só admin edita aula" on public.lessons for update to authenticated using (is_admin());
+drop policy if exists "Só admin remove aula" on public.lessons;
 create policy "Só admin remove aula" on public.lessons for delete to authenticated using (is_admin());
 
 -- =========================================================
@@ -110,10 +122,13 @@ create table if not exists public.enrollments (
 
 alter table public.enrollments enable row level security;
 
+drop policy if exists "Aluno vê as próprias matrículas" on public.enrollments;
 create policy "Aluno vê as próprias matrículas" on public.enrollments for select
   to authenticated using (user_id = auth.uid() or is_admin());
+drop policy if exists "Só admin ou o backend cria/edita matrícula" on public.enrollments;
 create policy "Só admin ou o backend cria/edita matrícula" on public.enrollments for insert
   to authenticated with check (is_admin());
+drop policy if exists "Só admin edita matrícula" on public.enrollments;
 create policy "Só admin edita matrícula" on public.enrollments for update
   to authenticated using (is_admin());
 
@@ -129,6 +144,7 @@ create table if not exists public.lesson_progress (
 
 alter table public.lesson_progress enable row level security;
 
+drop policy if exists "Cada um vê e marca só o próprio progresso" on public.lesson_progress;
 create policy "Cada um vê e marca só o próprio progresso" on public.lesson_progress
   for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 
@@ -145,7 +161,9 @@ create table if not exists public.materials (
 );
 
 alter table public.materials enable row level security;
+drop policy if exists "Todo mundo vê os materiais" on public.materials;
 create policy "Todo mundo vê os materiais" on public.materials for select using (true);
+drop policy if exists "Só admin gerencia materiais" on public.materials;
 create policy "Só admin gerencia materiais" on public.materials for all
   to authenticated using (is_admin()) with check (is_admin());
 
@@ -165,7 +183,9 @@ create table if not exists public.events (
 alter table public.events add column if not exists external_price text default '';
 
 alter table public.events enable row level security;
+drop policy if exists "Todo mundo vê os eventos" on public.events;
 create policy "Todo mundo vê os eventos" on public.events for select using (true);
+drop policy if exists "Só admin gerencia eventos" on public.events;
 create policy "Só admin gerencia eventos" on public.events for all
   to authenticated using (is_admin()) with check (is_admin());
 
@@ -183,10 +203,13 @@ create table if not exists public.event_registrations (
 
 alter table public.event_registrations enable row level security;
 
+drop policy if exists "Aluno vê a própria inscrição, admin vê todas" on public.event_registrations;
 create policy "Aluno vê a própria inscrição, admin vê todas" on public.event_registrations for select
   to authenticated using (user_id = auth.uid() or is_admin());
+drop policy if exists "Aluno se inscreve por conta própria" on public.event_registrations;
 create policy "Aluno se inscreve por conta própria" on public.event_registrations for insert
   to authenticated with check (user_id = auth.uid());
+drop policy if exists "Aluno cancela a própria inscrição, admin remove qualquer uma" on public.event_registrations;
 create policy "Aluno cancela a própria inscrição, admin remove qualquer uma" on public.event_registrations for delete
   to authenticated using (user_id = auth.uid() or is_admin());
 
@@ -200,7 +223,9 @@ create table if not exists public.announcements (
 );
 
 alter table public.announcements enable row level security;
+drop policy if exists "Todo mundo vê os comunicados" on public.announcements;
 create policy "Todo mundo vê os comunicados" on public.announcements for select using (true);
+drop policy if exists "Só admin publica comunicado" on public.announcements;
 create policy "Só admin publica comunicado" on public.announcements for all
   to authenticated using (is_admin()) with check (is_admin());
 
@@ -226,19 +251,30 @@ create table if not exists public.forum_answers (
 alter table public.forum_threads enable row level security;
 alter table public.forum_answers enable row level security;
 
+drop policy if exists "Todo mundo vê as dúvidas" on public.forum_threads;
 create policy "Todo mundo vê as dúvidas" on public.forum_threads for select using (true);
+drop policy if exists "Aluno logado publica dúvida" on public.forum_threads;
 create policy "Aluno logado publica dúvida" on public.forum_threads for insert
   to authenticated with check (author_id = auth.uid());
 
+drop policy if exists "Todo mundo vê as respostas" on public.forum_answers;
 create policy "Todo mundo vê as respostas" on public.forum_answers for select using (true);
+drop policy if exists "Aluno logado responde dúvida" on public.forum_answers;
 create policy "Aluno logado responde dúvida" on public.forum_answers for insert
   to authenticated with check (author_id = auth.uid());
 
 -- =========================================================
 -- 9. HABILITAR REALTIME (para a Central de Dúvidas atualizar sozinha na tela)
 -- =========================================================
-alter publication supabase_realtime add table public.forum_threads;
-alter publication supabase_realtime add table public.forum_answers;
+do $$
+begin
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'forum_threads') then
+    alter publication supabase_realtime add table public.forum_threads;
+  end if;
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'forum_answers') then
+    alter publication supabase_realtime add table public.forum_answers;
+  end if;
+end $$;
 
 -- =========================================================
 -- 10. ARMAZENAMENTO DE FOTOS (capa de cursos e eventos)
@@ -247,15 +283,18 @@ insert into storage.buckets (id, name, public)
 values ('media', 'media', true)
 on conflict (id) do nothing;
 
+drop policy if exists "Qualquer pessoa vê as fotos" on storage.objects;
 create policy "Qualquer pessoa vê as fotos"
   on storage.objects for select
   using (bucket_id = 'media');
 
+drop policy if exists "Só admin envia fotos" on storage.objects;
 create policy "Só admin envia fotos"
   on storage.objects for insert
   to authenticated
   with check (bucket_id = 'media' and is_admin());
 
+drop policy if exists "Só admin remove fotos" on storage.objects;
 create policy "Só admin remove fotos"
   on storage.objects for delete
   to authenticated
