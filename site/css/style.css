@@ -360,8 +360,19 @@ section{padding:100px 0;}
   .agenda-item{grid-template-columns:70px 1fr;}
   .agenda-item .btn{grid-column:1/-1;}
   .cta-band{flex-direction:column;text-align:center;}
-  section{padding:64px 0;}
+  section{padding:56px 0;}
   .footer-grid{grid-template-columns:1fr;}
+  .hero{padding:44px 0 56px;}
+  .hero-cta{flex-direction:column;align-items:stretch;margin-top:26px;}
+  .hero-cta .btn{width:100%;text-align:center;}
+  .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px;}
+  .hero-stats div{min-width:0;}
+  .hero-stats div span{display:block;}
+  .lead-box{grid-template-columns:1fr;}
+  .lead-visual, .lead-form{padding:28px 24px;}
+  .case-vitals{grid-template-columns:repeat(2,1fr);}
+  .case-box{padding:22px;}
+  .course-select-chip{gap:6px;}
 }
 
 /* ===== App shell (admin / student dashboard) ===== */
@@ -413,6 +424,7 @@ section{padding:100px 0;}
 }
 .app-form input:focus, .app-form select:focus, .app-form textarea:focus{outline:none;border-color:var(--purple);}
 
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .data-table{width:100%;border-collapse:collapse;}
 .data-table th{text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);padding:8px 10px;border-bottom:1.5px solid var(--line);}
 .data-table td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:.87rem;vertical-align:middle;}
@@ -548,6 +560,16 @@ section{padding:100px 0;}
   .app-main{padding:18px 16px calc(84px + env(safe-area-inset-bottom));}
   .app-stats{grid-template-columns:1fr 1fr;}
   .app-form{grid-template-columns:1fr;}
+  .app-card{padding:18px;}
+  .app-card-head{gap:10px;}
+  .app-card-head > button, .app-card-head > .btn-danger{width:100%;}
+  .data-table{min-width:560px;}
+  .modal-box{padding:22px;}
+}
+@media (max-width: 480px){
+  .app-topbar{flex-direction:column;align-items:stretch;}
+  .app-stats{grid-template-columns:1fr;}
+}
 
   .app-tabbar{
     display:flex;position:fixed;left:0;right:0;bottom:0;z-index:220;
