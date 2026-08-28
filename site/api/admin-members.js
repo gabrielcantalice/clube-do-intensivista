@@ -1,9 +1,20 @@
-// Gerencia membros a pedido do painel administrativo: convidar por e-mail,
-// promover/rebaixar (aluno <-> admin) e remover conta.
+// Gerencia membros a pedido do painel administrativo: criar conta com senha
+// temporária (sem depender do envio de e-mail do Supabase), promover/rebaixar
+// (aluno <-> admin), redefinir senha e remover conta.
 // Só quem já é admin (conferido pelo token da própria sessão) pode chamar isso —
 // por isso usa a service_role key, que nunca é exposta ao navegador.
 
+const crypto = require('crypto');
 const { getSupabaseAdmin } = require('../lib/supabaseAdmin');
+
+function generatePassword() {
+  // 12 caracteres, fácil de ler e copiar, sem ambiguidade (sem 0/O, 1/l/I).
+  var chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  var out = '';
+  var bytes = crypto.randomBytes(12);
+  for (var i = 0; i < 12; i++) out += chars[bytes[i] % chars.length];
+  return out;
+}
 
 async function requireAdmin(req, supabase) {
   var authHeader = req.headers.authorization || '';
@@ -50,16 +61,31 @@ module.exports = async function handler(req, res) {
       var role = body.role === 'admin' ? 'admin' : 'aluno';
       if (!email) { res.status(400).json({ error: 'E-mail é obrigatório.' }); return; }
 
-      var { data: invited, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(email, {
-        data: { full_name: fullName, profession: profession }
+      var tempPassword = generatePassword();
+
+      var { data: created, error: createErr } = await supabase.auth.admin.createUser({
+        email: email,
+        password: tempPassword,
+        email_confirm: true, // já entra confirmado — não depende do e-mail do Supabase
+        user_metadata: { full_name: fullName, profession: profession }
       });
-      if (inviteErr) { res.status(400).json({ error: inviteErr.message }); return; }
+      if (createErr) { res.status(400).json({ error: createErr.message }); return; }
 
       if (role === 'admin') {
-        await supabase.from('profiles').update({ role: 'admin' }).eq('id', invited.user.id);
+        await supabase.from('profiles').update({ role: 'admin' }).eq('id', created.user.id);
       }
 
-      res.status(200).json({ ok: true, userId: invited.user.id });
+      res.status(200).json({ ok: true, userId: created.user.id, tempPassword: tempPassword });
+      return;
+    }
+
+    if (action === 'resetPassword') {
+      var resetId = body.userId;
+      if (!resetId) { res.status(400).json({ error: 'userId é obrigatório.' }); return; }
+      var newTempPassword = generatePassword();
+      var { error: resetErr } = await supabase.auth.admin.updateUserById(resetId, { password: newTempPassword });
+      if (resetErr) { res.status(400).json({ error: resetErr.message }); return; }
+      res.status(200).json({ ok: true, tempPassword: newTempPassword });
       return;
     }
 

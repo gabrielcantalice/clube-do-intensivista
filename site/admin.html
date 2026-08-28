@@ -425,6 +425,20 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="modal-overlay" id="passwordModal">
+  <div class="modal-box">
+    <h3 id="passwordModalTitle">Conta criada</h3>
+    <p>Copie a senha temporária abaixo e envie para a pessoa por WhatsApp, e-mail ou pessoalmente. Ela pode trocá-la depois de entrar.</p>
+    <div class="modal-credential">
+      <span id="passwordModalValue">••••••••••••</span>
+      <button class="btn btn-outline btn-sm" id="passwordModalCopy" type="button">Copiar</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-block" id="passwordModalClose" type="button">Concluído</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
@@ -557,6 +571,7 @@ function initApp() {
         '<td>' + joined + '</td>' +
         '<td style="text-align:right;white-space:nowrap;">' +
           (isMe ? '' :
+            '<button class="btn btn-outline btn-sm" data-reset-pw="' + p.id + '" style="margin-right:6px;">Redefinir senha</button>' +
             '<button class="btn btn-outline btn-sm" data-toggle-role="' + p.id + '" data-current-role="' + p.role + '" style="margin-right:6px;">' + toggleLabel + '</button>' +
             '<button class="btn-danger" data-remove-member="' + p.id + '">Remover</button>'
           ) +
@@ -564,6 +579,25 @@ function initApp() {
       '</tr>';
     }).join('');
   }
+
+  function showPasswordModal(title, email, password) {
+    document.getElementById('passwordModalTitle').textContent = title;
+    document.getElementById('passwordModalValue').textContent = password;
+    document.getElementById('passwordModal').dataset.email = email;
+    document.getElementById('passwordModal').classList.add('show');
+  }
+  document.getElementById('passwordModalClose').addEventListener('click', function () {
+    document.getElementById('passwordModal').classList.remove('show');
+  });
+  document.getElementById('passwordModalCopy').addEventListener('click', function () {
+    var pw = document.getElementById('passwordModalValue').textContent;
+    navigator.clipboard && navigator.clipboard.writeText(pw).then(function () {
+      var btn = document.getElementById('passwordModalCopy');
+      var original = btn.textContent;
+      btn.textContent = 'Copiada!';
+      setTimeout(function () { btn.textContent = original; }, 1400);
+    });
+  });
 
   document.getElementById('inviteForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -576,12 +610,12 @@ function initApp() {
       role: document.getElementById('inviteRole').value
     };
     if (!payload.email) return;
-    btn.disabled = true; btn.textContent = 'Enviando...';
+    btn.disabled = true; btn.textContent = 'Criando...';
     try {
-      await callAdminMembersApi(payload);
-      toast('Convite enviado para ' + payload.email);
+      var result = await callAdminMembersApi(payload);
       e.target.reset();
       renderRealMembers();
+      showPasswordModal('Conta criada para ' + payload.email, payload.email, result.tempPassword);
     } catch (err) {
       toast('Erro: ' + err.message);
     }
@@ -596,6 +630,15 @@ function initApp() {
         await callAdminMembersApi({ action: 'setRole', userId: toggleBtn.getAttribute('data-toggle-role'), role: newRole });
         toast('Papel atualizado');
         renderRealMembers();
+      } catch (err) { toast('Erro: ' + err.message); }
+      return;
+    }
+    var resetBtn = e.target.closest('[data-reset-pw]');
+    if (resetBtn) {
+      if (!confirm('Gerar uma nova senha temporária para esta conta? A senha atual deixa de funcionar.')) return;
+      try {
+        var result = await callAdminMembersApi({ action: 'resetPassword', userId: resetBtn.getAttribute('data-reset-pw') });
+        showPasswordModal('Nova senha gerada', '', result.tempPassword);
       } catch (err) { toast('Erro: ' + err.message); }
       return;
     }
