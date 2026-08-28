@@ -106,9 +106,20 @@
               <option>Outro evento</option>
             </select>
           </div>
-          <div class="full">
-            <label>Link de inscrição externo (opcional)</label>
-            <input type="url" id="evExternalLink" placeholder="Preencha só se a inscrição for paga, fora do site (ex: Hotmart)">
+          <div>
+            <label>Este evento é pago?</label>
+            <select id="evIsPaid">
+              <option value="no">Gratuito</option>
+              <option value="yes">Pago</option>
+            </select>
+          </div>
+          <div id="evPriceField" style="display:none;">
+            <label>Valor / investimento</label>
+            <input type="text" id="evExternalPrice" placeholder="Ex: R$ 197">
+          </div>
+          <div class="full" id="evLinkField" style="display:none;">
+            <label>Link de pagamento/inscrição</label>
+            <input type="url" id="evExternalLink" placeholder="https://pay.hotmart.com/...">
           </div>
           <div class="full">
             <label>Foto do evento (opcional)</label>
@@ -167,14 +178,18 @@
             <input type="file" id="courseImage" accept="image/*">
           </div>
           <div class="full" style="border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
-            <label style="margin-bottom:2px;">Curso pago em plataforma externa (opcional)</label>
-            <p style="margin:0 0 10px;font-size:.78rem;color:var(--ink-soft);">Preencha só se este curso for vendido fora do site (ex: Hotmart). Se preenchido, o botão "Inscrever-se" leva direto para esse link em vez do fluxo gratuito interno.</p>
+            <label style="margin-bottom:2px;">Este curso é pago?</label>
+            <p style="margin:0 0 10px;font-size:.78rem;color:var(--ink-soft);">Se for pago (vendido fora do site, ex: Hotmart), o botão "Inscrever-se" leva direto pro link de pagamento em vez do fluxo gratuito interno — e só fica visível pros alunos que você liberar em "Cursos liberados".</p>
+            <select id="courseIsPaid">
+              <option value="no">Gratuito</option>
+              <option value="yes">Pago</option>
+            </select>
           </div>
-          <div>
+          <div id="coursePriceField" style="display:none;">
             <label>Valor / investimento</label>
             <input type="text" id="courseExternalPrice" placeholder="Ex: R$ 397 ou 12x de R$ 39,70">
           </div>
-          <div>
+          <div id="courseLinkField" style="display:none;">
             <label>Link de inscrição/pagamento</label>
             <input type="url" id="courseExternalLink" placeholder="https://pay.hotmart.com/...">
           </div>
@@ -849,14 +864,22 @@ async function initApp() {
     return pub.publicUrl;
   }
 
+  function updateCoursePaidFields() {
+    var paid = document.getElementById('courseIsPaid').value === 'yes';
+    document.getElementById('coursePriceField').style.display = paid ? '' : 'none';
+    document.getElementById('courseLinkField').style.display = paid ? '' : 'none';
+  }
+  document.getElementById('courseIsPaid').addEventListener('change', updateCoursePaidFields);
+
   document.getElementById('courseForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     var title = document.getElementById('courseTitle').value.trim();
     var modality = document.getElementById('courseModality').value;
     var workload = document.getElementById('courseWorkload').value.trim();
     var description = document.getElementById('courseDescription').value.trim();
-    var externalPrice = document.getElementById('courseExternalPrice').value.trim();
-    var externalLink = document.getElementById('courseExternalLink').value.trim();
+    var isPaid = document.getElementById('courseIsPaid').value === 'yes';
+    var externalPrice = isPaid ? document.getElementById('courseExternalPrice').value.trim() : '';
+    var externalLink = isPaid ? document.getElementById('courseExternalLink').value.trim() : '';
     var watchLink = document.getElementById('courseWatchLink').value.trim();
     if (!title) return;
 
@@ -883,6 +906,7 @@ async function initApp() {
       renderLessons();
       renderStats();
       e.target.reset();
+      updateCoursePaidFields();
       toast('Curso criado — já disponível na página pública de Cursos');
     } catch (err) {
       toast('Erro ao criar curso: ' + err.message);
@@ -908,12 +932,21 @@ async function initApp() {
   });
 
   // Event form
+  function updateEventPaidFields() {
+    var paid = document.getElementById('evIsPaid').value === 'yes';
+    document.getElementById('evPriceField').style.display = paid ? '' : 'none';
+    document.getElementById('evLinkField').style.display = paid ? '' : 'none';
+  }
+  document.getElementById('evIsPaid').addEventListener('change', updateEventPaidFields);
+
   document.getElementById('eventForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     var title = document.getElementById('evTitle').value.trim();
     var date = document.getElementById('evDate').value;
     var type = document.getElementById('evType').value;
-    var externalLink = document.getElementById('evExternalLink').value.trim();
+    var isPaid = document.getElementById('evIsPaid').value === 'yes';
+    var externalPrice = isPaid ? document.getElementById('evExternalPrice').value.trim() : '';
+    var externalLink = isPaid ? document.getElementById('evExternalLink').value.trim() : '';
     if (!title || !date) return;
 
     var btn = document.getElementById('eventSubmit');
@@ -927,11 +960,12 @@ async function initApp() {
       return;
     }
 
-    data.events.push({ id: CIStore.uid('ev'), title: title, date: date, type: type, externalLink: externalLink, imageUrl: imageUrl });
+    data.events.push({ id: CIStore.uid('ev'), title: title, date: date, type: type, externalPrice: externalPrice, externalLink: externalLink, imageUrl: imageUrl });
     persist();
     renderEvents();
     renderStats();
     e.target.reset();
+    updateEventPaidFields();
     btn.disabled = false; btn.textContent = 'Adicionar evento';
     toast('Evento adicionado');
   });

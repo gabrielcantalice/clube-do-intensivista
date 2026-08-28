@@ -170,7 +170,7 @@
       : '';
     item.innerHTML =
       '<div class="agenda-date"><strong>' + day + '</strong><span>' + month + '</span></div>' +
-      '<div class="agenda-info" style="display:flex;align-items:center;">' + thumb + '<div><h4>' + ev.title + '</h4><p>' + ev.type + '</p></div></div>' +
+      '<div class="agenda-info" style="display:flex;align-items:center;">' + thumb + '<div><h4>' + ev.title + '</h4><p>' + ev.type + (ev.externalPrice ? ' · ' + ev.externalPrice : '') + '</p></div></div>' +
       cta;
     list.appendChild(item);
   });
