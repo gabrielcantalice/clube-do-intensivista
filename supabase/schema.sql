@@ -14,6 +14,11 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
+-- "create table if not exists" não adiciona coluna em tabela que já existia
+-- antes dela existir no schema — por isso as colunas adicionadas depois da
+-- criação inicial da tabela também precisam de "add column if not exists".
+alter table public.profiles add column if not exists email text default '';
+
 alter table public.profiles enable row level security;
 
 drop policy if exists "Qualquer pessoa logada vê os perfis (para o ranking)" on public.profiles;
@@ -115,6 +120,14 @@ create table if not exists public.courses (
   image_url text default '',             -- foto de capa do curso
   created_at timestamptz not null default now()
 );
+
+-- Garante essas colunas mesmo se "courses" já existia antes delas serem
+-- adicionadas aqui (mesmo motivo do "email" em profiles, ver acima).
+alter table public.courses add column if not exists external_price text default '';
+alter table public.courses add column if not exists external_link text default '';
+alter table public.courses add column if not exists hotmart_product_id text default '';
+alter table public.courses add column if not exists hotmart_watch_url text default '';
+alter table public.courses add column if not exists image_url text default '';
 
 create table if not exists public.lessons (
   id uuid primary key default gen_random_uuid(),
@@ -223,6 +236,7 @@ create table if not exists public.events (
   created_at timestamptz not null default now()
 );
 alter table public.events add column if not exists external_price text default '';
+alter table public.events add column if not exists image_url text default '';
 
 alter table public.events enable row level security;
 drop policy if exists "Todo mundo vê os eventos" on public.events;
