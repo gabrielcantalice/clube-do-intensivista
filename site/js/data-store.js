@@ -7,9 +7,9 @@
       settings: {
         heroTitle: 'Conhecimento que transforma a prática na UTI.',
         heroSubtitle: 'Conteúdos, cursos e capacitações para profissionais e estudantes que querem aprimorar sua atuação em terapia intensiva e emergência.',
-        whatsapp: '5500000000000',
+        whatsapp: '5583988672657',
         instagram: '@clubedointensivista',
-        email: 'contato@clubedointensivista.com.br'
+        email: 'clubedointensivismo@gmail.com'
       },
       courses: [
         {
