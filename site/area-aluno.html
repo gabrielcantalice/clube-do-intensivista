@@ -300,6 +300,7 @@
 <script src="js/supabase-config.js"></script>
 <script src="js/data-store.js"></script>
 <script src="js/courses-api.js"></script>
+<script src="js/materials-api.js"></script>
 <script src="js/forum-api.js"></script>
 <script>
 async function initApp(myId) {
@@ -309,6 +310,8 @@ async function initApp(myId) {
   data.courses = CoursesAPI.coursesVisibleTo(allCourses, myEnrollments);
   var progress = await CoursesAPI.loadProgress(myId);
   var activeCourseId = data.courses[0] ? data.courses[0].id : null;
+  var materials = [];
+  try { materials = await MaterialsAPI.loadAllMaterials(); } catch (e) { materials = []; }
 
   var expandedThreads = {};
 
@@ -426,7 +429,7 @@ async function initApp(myId) {
       { label: 'Cursos matriculados', value: data.courses.length },
       { label: 'Aulas concluídas', value: doneLessons + '/' + totalLessons },
       { label: 'Certificados conquistados', value: certs },
-      { label: 'Materiais disponíveis', value: data.materials.length }
+      { label: 'Materiais disponíveis', value: materials.length }
     ];
     document.getElementById('alunoStats').innerHTML = stats.map(function (s) {
       return '<div class="app-stat"><strong>' + s.value + '</strong><span>' + s.label + '</span></div>';
@@ -510,9 +513,15 @@ async function initApp(myId) {
   }
 
   function renderMaterials() {
-    document.getElementById('alunoMaterialsBody').innerHTML = data.materials.map(function (m) {
+    var body = document.getElementById('alunoMaterialsBody');
+    if (!materials.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">Nenhum material cadastrado ainda.</div></td></tr>'; return; }
+    body.innerHTML = materials.map(function (m) {
+      var link = m.file_url || m.external_link;
+      var btn = link
+        ? '<a href="' + link + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Baixar</a>'
+        : '<span class="table-tag">Em breve</span>';
       return '<tr><td>' + m.title + '</td><td><span class="table-tag">' + m.type + '</span></td>' +
-        '<td style="text-align:right;"><a href="#" class="btn btn-outline btn-sm" onclick="return false;">Baixar</a></td></tr>';
+        '<td style="text-align:right;">' + btn + '</td></tr>';
     }).join('');
   }
 

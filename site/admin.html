@@ -62,7 +62,7 @@
         <h1 id="adminTitle">Visão geral</h1>
         <p id="adminSubtitle">Gerencie eventos, cursos, aulas, materiais, comunicados e membros do Clube.</p>
       </div>
-      <button class="btn btn-outline btn-sm" id="resetDataBtn">Limpar materiais locais</button>
+      <button class="btn btn-outline btn-sm" id="resetDataBtn">Restaurar comunicados/config.</button>
     </div>
 
     <!-- VISÃO GERAL -->
@@ -277,8 +277,20 @@
               <option>Aula gravada</option>
             </select>
           </div>
+          <div class="full">
+            <label>Descrição curta</label>
+            <textarea id="matDescription" rows="2" placeholder="Uma frase sobre o que tem nesse material"></textarea>
+          </div>
+          <div class="full">
+            <label>Arquivo (PDF, apostila, etc.)</label>
+            <input type="file" id="matFile">
+          </div>
+          <div class="full">
+            <label>Ou link externo (Google Drive, Hotmart, etc.)</label>
+            <input type="url" id="matExternalLink" placeholder="https://... (preencha só se não for enviar um arquivo)">
+          </div>
           <div class="full" style="align-self:flex-end;">
-            <button type="submit" class="btn btn-primary">Adicionar material</button>
+            <button type="submit" class="btn btn-primary" id="materialSubmit">Adicionar material</button>
           </div>
         </form>
       </div>
@@ -540,6 +552,7 @@
 <script src="js/data-store.js"></script>
 <script src="js/courses-api.js"></script>
 <script src="js/events-api.js"></script>
+<script src="js/materials-api.js"></script>
 <script src="js/forum-api.js"></script>
 <script>
 var sb = window.getSupabaseClient();
@@ -550,6 +563,7 @@ async function initApp() {
   var activeCourseId = null;
   var events = [];
   var eventRegCounts = {};
+  var materials = [];
   var myId = (await sb.auth.getSession()).data.session.user.id;
 
   async function loadCourses() {
@@ -566,6 +580,10 @@ async function initApp() {
     if (!error) {
       (regs || []).forEach(function (r) { eventRegCounts[r.event_id] = (eventRegCounts[r.event_id] || 0) + 1; });
     }
+  }
+
+  async function loadMaterials() {
+    materials = await MaterialsAPI.loadAllMaterials();
   }
 
   function toast(msg) {
@@ -588,7 +606,7 @@ async function initApp() {
       { label: 'Próximos eventos', value: events.length },
       { label: 'Cursos ativos', value: courses.length },
       { label: 'Aulas cadastradas', value: totalLessons },
-      { label: 'Materiais na biblioteca', value: data.materials.length }
+      { label: 'Materiais na biblioteca', value: materials.length }
     ];
     document.getElementById('adminStats').innerHTML = stats.map(function (s) {
       return '<div class="app-stat"><strong>' + s.value + '</strong><span>' + s.label + '</span></div>';
@@ -630,8 +648,8 @@ async function initApp() {
 
   function renderMaterials() {
     var body = document.getElementById('materialsBody');
-    if (!data.materials.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">Nenhum material cadastrado.</div></td></tr>'; return; }
-    body.innerHTML = data.materials.map(function (m) {
+    if (!materials.length) { body.innerHTML = '<tr><td colspan="3"><div class="empty-state">Nenhum material cadastrado.</div></td></tr>'; return; }
+    body.innerHTML = materials.map(function (m) {
       return '<tr><td>' + m.title + '</td><td><span class="table-tag">' + m.type + '</span></td>' +
         '<td style="text-align:right;"><button class="btn-danger" data-del-material="' + m.id + '">Remover</button></td></tr>';
     }).join('');
@@ -849,6 +867,7 @@ async function initApp() {
   async function renderAll() {
     await loadCourses();
     await loadEvents();
+    await loadMaterials();
     renderStats();
     renderEvents();
     renderCourseChips();
@@ -913,7 +932,7 @@ async function initApp() {
     if (!file) return '';
     var path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '-' + file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
     var { error } = await sb.storage.from('media').upload(path, file, { upsert: false });
-    if (error) { throw new Error('Falha ao enviar a foto: ' + error.message); }
+    if (error) { throw new Error('Falha ao enviar o arquivo: ' + error.message); }
     var { data: pub } = sb.storage.from('media').getPublicUrl(path);
     return pub.publicUrl;
   }
@@ -1130,28 +1149,54 @@ async function initApp() {
   });
 
   // Material form
-  document.getElementById('materialForm').addEventListener('submit', function (e) {
+  document.getElementById('materialForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     var title = document.getElementById('matTitle').value.trim();
     var type = document.getElementById('matType').value;
+    var description = document.getElementById('matDescription').value.trim();
+    var externalLink = document.getElementById('matExternalLink').value.trim();
     if (!title) return;
-    data.materials.push({ id: CIStore.uid('mat'), title: title, type: type, free: true });
-    persist();
-    renderMaterials();
-    renderStats();
-    e.target.reset();
-    toast('Material adicionado — já disponível na página pública de Materiais');
+
+    var btn = document.getElementById('materialSubmit');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+    var fileUrl = '';
+    try {
+      fileUrl = await uploadImageIfAny('matFile');
+    } catch (err) {
+      toast(err.message);
+      btn.disabled = false; btn.textContent = 'Adicionar material';
+      return;
+    }
+
+    try {
+      var material = await MaterialsAPI.createMaterial({
+        title: title, type: type, description: description,
+        file_url: fileUrl, external_link: externalLink, free: true
+      });
+      materials.push(material);
+      renderMaterials();
+      renderStats();
+      e.target.reset();
+      toast('Material adicionado — já disponível na página pública de Materiais');
+    } catch (err) {
+      toast('Erro ao adicionar material: ' + err.message);
+    }
+    btn.disabled = false; btn.textContent = 'Adicionar material';
   });
 
-  document.getElementById('materialsBody').addEventListener('click', function (e) {
+  document.getElementById('materialsBody').addEventListener('click', async function (e) {
     var btn = e.target.closest('button[data-del-material]');
     if (!btn) return;
     var id = btn.getAttribute('data-del-material');
-    data.materials = data.materials.filter(function (m) { return m.id !== id; });
-    persist();
-    renderMaterials();
-    renderStats();
-    toast('Material removido');
+    try {
+      await MaterialsAPI.deleteMaterial(id);
+      materials = materials.filter(function (m) { return m.id !== id; });
+      renderMaterials();
+      renderStats();
+      toast('Material removido');
+    } catch (err) {
+      toast('Erro ao remover material: ' + err.message);
+    }
   });
 
   // Announcement form
@@ -1190,11 +1235,13 @@ async function initApp() {
   });
 
   document.getElementById('resetDataBtn').addEventListener('click', function () {
-    if (!confirm('Apagar todos os materiais cadastrados neste navegador? (Cursos, eventos e matrículas ficam salvos no banco de dados — use o SQL Editor do Supabase pra apagar esses.)')) return;
-    data.materials = [];
-    persist();
+    if (!confirm('Restaurar comunicados de exemplo e configurações padrão? (Cursos, eventos, materiais e matrículas ficam salvos no banco de dados e não são afetados por isso — remova-os individualmente pela tabela de cada um.)')) return;
+    var fresh = CIStore.reset();
+    data.announcements = fresh.announcements;
+    data.settings = fresh.settings;
+    fillSettingsForm();
     renderAll();
-    toast('Materiais apagados');
+    toast('Dados locais restaurados');
   });
 
   fillSettingsForm();

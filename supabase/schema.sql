@@ -210,10 +210,14 @@ create table if not exists public.materials (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   type text not null default 'E-book',
-  file_url text default '',
+  description text default '',
+  file_url text default '',          -- arquivo enviado (Supabase Storage)
+  external_link text default '',     -- ou link externo (Google Drive, Hotmart etc.)
   free boolean not null default true,
   created_at timestamptz not null default now()
 );
+alter table public.materials add column if not exists description text default '';
+alter table public.materials add column if not exists external_link text default '';
 
 alter table public.materials enable row level security;
 drop policy if exists "Todo mundo vê os materiais" on public.materials;
