@@ -11,48 +11,9 @@
         instagram: '@clubedointensivista',
         email: 'clubedointensivismo@gmail.com'
       },
-      courses: [
-        {
-          id: 'vm',
-          title: 'Ventilação Mecânica na Prática',
-          modality: 'Presencial',
-          lessons: [
-            { id: 'vm-1', title: 'Fisiologia respiratória aplicada', duration: '45 min' },
-            { id: 'vm-2', title: 'Modos ventilatórios e programação inicial', duration: '52 min' },
-            { id: 'vm-3', title: 'Desmame ventilatório e extubação segura', duration: '38 min' }
-          ]
-        },
-        {
-          id: 'us',
-          title: 'Ultrassonografia à Beira-Leito',
-          modality: 'Presencial',
-          lessons: [
-            { id: 'us-1', title: 'Princípios físicos e manuseio do aparelho', duration: '40 min' },
-            { id: 'us-2', title: 'Ultrassom pulmonar na prática', duration: '55 min' }
-          ]
-        },
-        {
-          id: 'gaso',
-          title: 'Gasometria Arterial Descomplicada',
-          modality: 'Online',
-          lessons: [
-            { id: 'gaso-1', title: 'Introdução ao equilíbrio ácido-base', duration: '30 min' },
-            { id: 'gaso-2', title: 'Interpretação passo a passo', duration: '41 min' }
-          ]
-        }
-      ],
-      materials: [
-        { id: 'mat-1', title: 'Guia de Gasometria Arterial', type: 'E-book', free: true },
-        { id: 'mat-2', title: 'Protocolo de Sepse', type: 'Protocolo', free: true },
-        { id: 'mat-3', title: 'Desmame Ventilatório', type: 'Apostila', free: true },
-        { id: 'mat-4', title: 'Hemodinâmica na Prática', type: 'Aula gravada', free: true }
-      ],
-      events: [
-        { id: 'ev-1', date: '2026-09-16', title: 'Live: Doação de Órgãos na UTI', type: 'Live gratuita' },
-        { id: 'ev-2', date: '2026-09-27', title: 'Curso de Ultrassonografia à Beira-Leito', type: 'Curso presencial' },
-        { id: 'ev-3', date: '2026-10-04', title: 'Curso de Ventilação Mecânica na Prática', type: 'Curso presencial' },
-        { id: 'ev-4', date: '2026-10-18', title: 'Curso de Acesso Venoso Guiado por Imagem', type: 'Curso presencial' }
-      ],
+      courses: [],
+      materials: [],
+      events: [],
       announcements: [
         { id: 'an-1', date: '2026-08-20', text: 'Novo módulo de casos clínicos disponível na área Na Prática.' },
         { id: 'an-2', date: '2026-08-10', text: 'Abertas as inscrições gratuitas para a turma de outubro.' }
@@ -72,9 +33,9 @@
   // content apart from courses/materials/events an admin created, so the new ones
   // can be appended to the live site automatically.
   var SEED_IDS = {
-    courses: ['vm', 'us', 'gaso'],
-    materials: ['mat-1', 'mat-2', 'mat-3', 'mat-4'],
-    events: ['ev-1', 'ev-2', 'ev-3', 'ev-4']
+    courses: [],
+    materials: [],
+    events: []
   };
 
   var LEVELS = [

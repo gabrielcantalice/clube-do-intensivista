@@ -51,72 +51,8 @@
       <button class="filter-chip" data-filter="aula">Aulas gravadas</button>
     </div>
 
-    <div class="grid grid-4" id="materiaisGrid">
-      <div class="card" data-group="materiais" data-category="gratuito">
-        <div class="card-media"><span class="tag">Gratuito</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Guia de Gasometria Arterial</h3>
-          <p style="font-size:.85rem;">E-book essencial de bolso para leitura rápida à beira-leito.</p>
-          <a href="#" class="btn btn-outline btn-sm">Baixar grátis</a>
-        </div>
-      </div>
-      <div class="card" data-group="materiais" data-category="protocolo">
-        <div class="card-media"><span class="tag">Protocolo</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Protocolo de Sepse</h3>
-          <p style="font-size:.85rem;">Fluxo institucional passo a passo, pronto para consulta.</p>
-          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
-        </div>
-      </div>
-      <div class="card" data-group="materiais" data-category="ebook">
-        <div class="card-media"><span class="tag">E-book</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Desmame Ventilatório</h3>
-          <p style="font-size:.85rem;">Passo a passo com checklists práticos.</p>
-          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
-        </div>
-      </div>
-      <div class="card" data-group="materiais" data-category="aula">
-        <div class="card-media"><span class="tag">Aula gravada</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Hemodinâmica na Prática</h3>
-          <p style="font-size:.85rem;">Aula gravada + material de apoio em PDF.</p>
-          <a href="#" class="btn btn-outline btn-sm">Assistir</a>
-        </div>
-      </div>
-      <div class="card" data-group="materiais" data-category="gratuito protocolo">
-        <div class="card-media"><span class="tag">Gratuito</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Checklist de Admissão na UTI</h3>
-          <p style="font-size:.85rem;">Guia rápido para não esquecer nenhum passo.</p>
-          <a href="#" class="btn btn-outline btn-sm">Baixar grátis</a>
-        </div>
-      </div>
-      <div class="card" data-group="materiais" data-category="ebook">
-        <div class="card-media"><span class="tag">E-book</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Neurologia na UTI</h3>
-          <p style="font-size:.85rem;">Avaliação neurológica objetiva e prática.</p>
-          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
-        </div>
-      </div>
-      <div class="card" data-group="materiais" data-category="protocolo">
-        <div class="card-media"><span class="tag">Protocolo</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Manejo de Vias Aéreas Difíceis</h3>
-          <p style="font-size:.85rem;">Fluxograma direto para decisão rápida.</p>
-          <a href="#" class="btn btn-outline btn-sm">Ver material</a>
-        </div>
-      </div>
-      <div class="card" data-group="materiais" data-category="aula gratuito">
-        <div class="card-media"><span class="tag">Gratuito</span></div>
-        <div class="card-body">
-          <h3 style="font-size:1rem;">Aula: Leitura de Gasometria</h3>
-          <p style="font-size:.85rem;">Aula introdutória gravada, aberta a todos.</p>
-          <a href="#" class="btn btn-outline btn-sm">Assistir grátis</a>
-        </div>
-      </div>
-    </div>
+    <div class="grid grid-4" id="materiaisGrid"></div>
+    <div class="empty-state" id="materiaisEmptyState" style="border:1px dashed var(--line);border-radius:var(--radius-md);">Nenhum material cadastrado ainda. Cadastre o primeiro pelo painel administrativo.</div>
   </div>
 </section>
 
@@ -198,6 +134,7 @@
   var data = CIStore.load();
   var extra = data.materials.filter(function (m) { return CIStore.SEED_IDS.materials.indexOf(m.id) === -1; });
   if (!extra.length) return;
+  document.getElementById('materiaisEmptyState').style.display = 'none';
   var grid = document.getElementById('materiaisGrid');
   extra.forEach(function (m) {
     var card = document.createElement('div');

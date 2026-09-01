@@ -47,23 +47,7 @@
     <div class="section-head" style="text-align:left;margin:16px 0 40px;max-width:none;">
       <h2 style="margin:0;">Garanta sua vaga na próxima turma</h2>
     </div>
-    <div class="agenda-list">
-      <div class="agenda-item">
-        <div class="agenda-date"><strong>27</strong><span>Set</span></div>
-        <div class="agenda-info"><h4>Ultrassonografia à Beira-Leito</h4><p>Presencial · São Paulo/SP · 20 vagas</p></div>
-        <a href="curso-ultrassonografia.html" class="btn btn-primary btn-sm">Inscreva-se</a>
-      </div>
-      <div class="agenda-item">
-        <div class="agenda-date"><strong>04</strong><span>Out</span></div>
-        <div class="agenda-info"><h4>Ventilação Mecânica na Prática</h4><p>Presencial · Rio de Janeiro/RJ · 25 vagas</p></div>
-        <a href="curso-ventilacao-mecanica.html" class="btn btn-primary btn-sm">Inscreva-se</a>
-      </div>
-      <div class="agenda-item">
-        <div class="agenda-date"><strong>disp.</strong><span>Online</span></div>
-        <div class="agenda-info"><h4>Gasometria Arterial Descomplicada</h4><p>EAD · Acesso imediato · 6 meses</p></div>
-        <a href="#" class="btn btn-primary btn-sm">Inscreva-se</a>
-      </div>
-    </div>
+    <div class="empty-state" style="border:1px dashed var(--line);border-radius:var(--radius-md);background:var(--white);">Nenhuma turma aberta no momento. Cadastre a primeira pelo painel administrativo.</div>
   </div>
 </section>
 
@@ -76,85 +60,8 @@
       <button class="filter-chip" data-filter="curta">Curta duração</button>
     </div>
 
-    <div class="grid grid-3" id="cursosGrid">
-      <article class="card" data-group="cursos" data-category="presencial">
-        <div class="card-media"><span class="tag">Próxima turma</span></div>
-        <div class="card-body">
-          <div class="card-meta"><span>Presencial</span><span>16h</span><span>Certificado</span></div>
-          <h3>Ventilação Mecânica na Prática</h3>
-          <p>Da programação inicial ao desmame seguro: raciocínio clínico aplicado ao plantão real.</p>
-          <div class="card-footer">
-            <div class="price-free">Inscrição gratuita</div>
-            <a href="curso-ventilacao-mecanica.html" class="btn btn-outline btn-sm">Ver curso</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-group="cursos" data-category="presencial">
-        <div class="card-media"><span class="tag">Turmas abertas</span></div>
-        <div class="card-body">
-          <div class="card-meta"><span>Presencial</span><span>20h</span><span>Prática guiada</span></div>
-          <h3>Ultrassonografia à Beira-Leito</h3>
-          <p>POCUS aplicado à UTI: pulmão, hemodinâmica e acesso vascular guiado por imagem.</p>
-          <div class="card-footer">
-            <div class="price-free">Inscrição gratuita</div>
-            <a href="curso-ultrassonografia.html" class="btn btn-outline btn-sm">Ver curso</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-group="cursos" data-category="online">
-        <div class="card-media"><span class="tag">Online</span></div>
-        <div class="card-body">
-          <div class="card-meta"><span>EAD</span><span>8h</span><span>Acesso 6 meses</span></div>
-          <h3>Gasometria Arterial Descomplicada</h3>
-          <p>Interpretação passo a passo com casos reais de UTI e emergência.</p>
-          <div class="card-footer">
-            <div class="price-free">Inscrição gratuita</div>
-            <a href="#" class="btn btn-outline btn-sm">Ver curso</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-group="cursos" data-category="presencial">
-        <div class="card-media"><span class="tag">Vagas limitadas</span></div>
-        <div class="card-body">
-          <div class="card-meta"><span>Presencial</span><span>12h</span><span>Simuladores</span></div>
-          <h3>Acesso Venoso Guiado por Imagem</h3>
-          <p>Punção venosa central e periférica com ultrassom, do básico ao avançado.</p>
-          <div class="card-footer">
-            <div class="price-free">Inscrição gratuita</div>
-            <a href="#" class="btn btn-outline btn-sm">Ver curso</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-group="cursos" data-category="online curta">
-        <div class="card-media"><span class="tag">Online</span></div>
-        <div class="card-body">
-          <div class="card-meta"><span>EAD</span><span>6h</span><span>Certificado</span></div>
-          <h3>Sepse: do Reconhecimento ao Manejo</h3>
-          <p>Protocolo institucional aplicado passo a passo com casos reais.</p>
-          <div class="card-footer">
-            <div class="price-free">Inscrição gratuita</div>
-            <a href="#" class="btn btn-outline btn-sm">Ver curso</a>
-          </div>
-        </div>
-      </article>
-
-      <article class="card" data-group="cursos" data-category="curta online">
-        <div class="card-media"><span class="tag">Curta duração</span></div>
-        <div class="card-body">
-          <div class="card-meta"><span>EAD</span><span>4h</span><span>Certificado</span></div>
-          <h3>Hemodinâmica na Prática</h3>
-          <p>Leitura rápida de parâmetros e conduta nas primeiras horas de instabilidade.</p>
-          <div class="card-footer">
-            <div class="price-free">Inscrição gratuita</div>
-            <a href="#" class="btn btn-outline btn-sm">Ver curso</a>
-          </div>
-        </div>
-      </article>
-    </div>
+    <div class="grid grid-3" id="cursosGrid"></div>
+    <div class="empty-state" id="cursosEmptyState" style="border:1px dashed var(--line);border-radius:var(--radius-md);">Nenhum curso cadastrado ainda. Cadastre o primeiro pelo painel administrativo.</div>
   </div>
 </section>
 
@@ -230,6 +137,7 @@
   var extra;
   try { extra = await CoursesAPI.loadAllCourses(); } catch (e) { return; }
   if (!extra.length) return;
+  document.getElementById('cursosEmptyState').style.display = 'none';
   var grid = document.getElementById('cursosGrid');
   var category = { Presencial: 'presencial', Online: 'online' };
   extra.forEach(function (c) {

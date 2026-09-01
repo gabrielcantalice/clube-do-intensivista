@@ -62,7 +62,7 @@
         <h1 id="adminTitle">Visão geral</h1>
         <p id="adminSubtitle">Gerencie eventos, cursos, aulas, materiais, comunicados e membros do Clube.</p>
       </div>
-      <button class="btn btn-outline btn-sm" id="resetDataBtn">Restaurar dados de exemplo</button>
+      <button class="btn btn-outline btn-sm" id="resetDataBtn">Limpar materiais locais</button>
     </div>
 
     <!-- VISÃO GERAL -->
@@ -1190,11 +1190,11 @@ async function initApp() {
   });
 
   document.getElementById('resetDataBtn').addEventListener('click', function () {
-    if (!confirm('Restaurar eventos, materiais e comunicados de exemplo? (Cursos e matrículas ficam salvos no banco de dados e não são afetados por isso.)')) return;
-    data = CIStore.reset();
-    fillSettingsForm();
+    if (!confirm('Apagar todos os materiais cadastrados neste navegador? (Cursos, eventos e matrículas ficam salvos no banco de dados — use o SQL Editor do Supabase pra apagar esses.)')) return;
+    data.materials = [];
+    persist();
     renderAll();
-    toast('Dados restaurados');
+    toast('Materiais apagados');
   });
 
   fillSettingsForm();
